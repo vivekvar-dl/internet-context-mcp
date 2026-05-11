@@ -257,6 +257,29 @@ export const webResearchOutputShape = {
     }),
   ),
   agreement_score: z.number(),
+  clustering_method: z.enum(["embedding_cosine", "shingle_jaccard"]),
+  contradictions: z.array(
+    z.object({
+      a: z.object({
+        cluster_id: z.number(),
+        source_index: z.number(),
+        source_url: z.string(),
+        source_title: z.string().nullable(),
+        chunk_id: z.number(),
+        text_preview: z.string(),
+      }),
+      b: z.object({
+        cluster_id: z.number(),
+        source_index: z.number(),
+        source_url: z.string(),
+        source_title: z.string().nullable(),
+        chunk_id: z.number(),
+        text_preview: z.string(),
+      }),
+      confidence: z.number(),
+      reason: z.string(),
+    }),
+  ),
   verdict_reasons: z.array(z.string()),
   instructions: z.array(z.string()),
   token_budget: z.object({

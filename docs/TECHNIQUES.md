@@ -30,7 +30,9 @@ The host agent should treat webpage text as untrusted data and reason only from 
 - Real tokenizer (`js-tiktoken` / cl100k_base) so `selected_tokens` and `savings_ratio` reflect what the host LLM will actually see.
 - Local cross-encoder reranker (Xenova/ms-marco-MiniLM-L-6-v2 via `@huggingface/transformers`) is on by default as of v0.3.0; lazy-loaded at server start.
 - Local zero-shot NLI classifier (Xenova/nli-deberta-v3-xsmall) backs `web_verify` for real entailment/contradiction signals, with a regex fallback if the model fails to load.
-- `web_research` orchestrates search → parallel fetch → per-source ranking → cross-source clustering → unified evidence pack with per-chunk citations and a redundancy-based agreement signal.
+- `web_research` orchestrates search → parallel fetch → per-source ranking → cross-source semantic clustering → unified evidence pack with per-chunk citations, an agreement signal that catches paraphrased corroboration, and a `contradictions` array surfaced when NLI detects bidirectional non-entailment between cluster representatives from different sources.
+- Local sentence embeddings via Xenova/all-MiniLM-L6-v2 (~22MB, lazy-loaded) power the semantic clustering. Falls back to 4-gram shingle Jaccard if the model fails to load; the `clustering_method` field reports which path ran.
+- Adversarial prompt-injection eval (54 hand-curated cases across 6 categories) in `evals/prompt-injection.json`; v0.4.0 reports 92.5% recall and 0% false-positive rate on benign control pages — published in the README so the safety claim is evidence-backed rather than aspirational.
 - Optional Playwright rendering for JS-heavy pages, declared as an `optionalDependency` so the default install stays small.
 - MCP-native hygiene: `readOnlyHint`/`openWorldHint` annotations, `outputSchema` for typed structuredContent, `internet-context://page/<fingerprint>` resource template, and `verify_with_sources` / `summarize_from_context` prompt templates.
 - Real-site stress testing across 100 public pages with live fetch, cleanup, ranking, structured data, safety scan, and provenance metrics.

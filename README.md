@@ -83,7 +83,9 @@ Output shape (abbreviated):
 }
 ```
 
-`agreement_count` and `agreement_score` use **shingle-based** clustering, so they reflect verbatim copy-paste agreement (one source quoting another) — not paraphrased agreement. If three sources independently say the same thing in different words, they will still land in different clusters. This is honest by design; a semantic-similarity clusterer is a planned upgrade.
+`agreement_count` and `agreement_score` use **semantic similarity** (all-MiniLM-L6-v2 cosine, ~22MB, lazy-loaded) by default in v0.4.0+. Paraphrased agreement now counts: three sources independently saying the same fact in different words will cluster together. The clustering falls back to 4-gram shingle Jaccard when the embedding model fails to load; the `clustering_method` field on every response shows which one ran.
+
+`contradictions` lists cases where the local NLI classifier returns bidirectional non-entailment between cluster representatives from different sources — i.e. source A's chunk does not entail source B's chunk, and B's does not entail A's. This is conservative: it only fires on real disagreement, not on a source being more specific than another. Validated on synthetic ("coffee lowers cardio risk" vs "coffee increases cardio risk" → flagged with 0.9999 confidence; the unrelated origin-of-coffee chunk → no false positive).
 
 ### `web_context`
 
@@ -308,6 +310,35 @@ reports/stress-real-sites-latest.json
 
 It measures live fetch success, token savings, selected chunks, structured-data detection, safety warnings, and source provenance coverage.
 
+## Prompt-Injection Eval
+
+The repo includes a 54-case adversarial set in `evals/prompt-injection.json` covering visible instruction-override, hidden-text (display:none / visibility:hidden / opacity:0 / aria-hidden / off-screen), HTML-comment injection, credential requests, exfiltration prompts, and benign-control pages.
+
+```bash
+npm run eval:injection
+```
+
+Reported numbers for v0.4.0 (regex scanner, no LLM):
+
+```json
+{
+  "true_positive_rate": 0.925,
+  "false_positive_rate": 0,
+  "precision": 1,
+  "recall": 0.925,
+  "by_category": {
+    "instruction_override_visible": 0.80,
+    "hidden_text": 0.90,
+    "html_comment": 1.00,
+    "credential_request": 1.00,
+    "exfiltration": 1.00,
+    "benign_control": 1.00
+  }
+}
+```
+
+Known misses: "disregard *the* prior instructions" (intervening article), "no longer valid" framing, off-screen positioning via `position:absolute;left:-9999px`. Real failures, intentionally surfaced rather than papered over.
+
 ## Relevance Eval
 
 The repo includes a labeled relevance set in `evals/relevance.json`. It checks whether compressed capsules preserve required facts, avoid junk terms, stay under the evidence token budget, and include source provenance.
@@ -398,9 +429,9 @@ Then call any tool with `render: "browser"`.
 
 ## Next Milestones
 
-1. Replace the shingle-based cross-source clustering in `web_research` with semantic similarity so paraphrased agreement counts.
-2. Multi-sentence claim decomposition in `web_verify` so compound claims return per-clause verdicts.
-3. Stable text-fragment anchors (`#:~:text=...`) in chunk provenance for deep-linking back to the page.
-4. PDF support for the fetch + clean pipeline.
-5. `robots.txt` + crawl-delay awareness for responsible read-only fetching.
-6. Adversarial prompt-injection eval set replacing the small hand-written regex set.
+1. Multi-sentence claim decomposition in `web_verify` so compound claims return per-clause verdicts.
+2. Stable text-fragment anchors (`#:~:text=...`) in chunk provenance for deep-linking back to the page.
+3. PDF support for the fetch + clean pipeline.
+4. `robots.txt` + crawl-delay awareness for responsible read-only fetching.
+5. Expand the prompt-injection eval beyond the hand-curated 54 cases — integrate publicly-available adversarial datasets.
+6. Close the regex gaps the injection eval surfaced (intervening articles, "no longer valid", off-screen positioning).

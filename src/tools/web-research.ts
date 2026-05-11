@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as cheerio from "cheerio";
 import { z } from "zod";
 import { buildContextCapsule } from "../lib/context-capsule.js";
+import { detectContradictions } from "../lib/cross-source-contradictions.js";
 import {
   crossSourceRank,
   type SourceChunkInput,
@@ -136,7 +137,7 @@ export function registerWebResearchTool(server: McpServer): void {
         }
       }
 
-      const crossRanked = crossSourceRank(pooled, {
+      const crossRanked = await crossSourceRank(pooled, {
         maxOutput: Math.max(6, Math.floor(max_tokens_total / 250)),
       });
 
@@ -150,6 +151,11 @@ export function registerWebResearchTool(server: McpServer): void {
         selectedEvidence.push(chunk);
         tokenCount += chunk.token_estimate;
       }
+
+      const contradictions = await detectContradictions(
+        crossRanked.ranked_chunks,
+        { topK: 6 },
+      );
 
       const agreementScore =
         crossRanked.unique_sources <= 1
@@ -177,6 +183,10 @@ export function registerWebResearchTool(server: McpServer): void {
         topReasons.push("multiple_sources_corroborated");
       } else {
         topReasons.push("partial_cross_source_agreement");
+      }
+
+      if (contradictions.length > 0) {
+        topReasons.push(`${contradictions.length}_cross_source_contradictions_detected`);
       }
 
       return structuredJsonContent({
@@ -232,6 +242,8 @@ export function registerWebResearchTool(server: McpServer): void {
           text: chunk.text,
         })),
         agreement_score: agreementScore,
+        clustering_method: crossRanked.clustering_method,
+        contradictions,
         verdict_reasons: topReasons,
         instructions: [
           "Cite chunks by chunk_id AND source_url. Higher agreement_count means multiple sources independently said the same thing.",

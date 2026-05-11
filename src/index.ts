@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import {
+  embeddingsEnabledByDefault,
+  warmEmbeddings,
+} from "./lib/embeddings.js";
 import { nliEnabledByDefault, warmNli } from "./lib/nli-classifier.js";
 import { warmReranker } from "./lib/reranker.js";
 import { rerankerEnabledByDefault } from "./lib/reranker.js";
@@ -16,7 +20,7 @@ import { registerWebVerifyTool } from "./tools/web-verify.js";
 
 const server = new McpServer({
   name: "internet-context-mcp",
-  version: "0.3.0",
+  version: "0.4.0",
 });
 
 registerWebReadTool(server);
@@ -34,6 +38,9 @@ if (rerankerEnabledByDefault()) {
 }
 if (nliEnabledByDefault()) {
   void warmNli();
+}
+if (embeddingsEnabledByDefault()) {
+  void warmEmbeddings();
 }
 
 const transport = new StdioServerTransport();
