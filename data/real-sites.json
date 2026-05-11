@@ -1,0 +1,602 @@
+[
+  {
+    "id": "example-domain",
+    "category": "reference",
+    "url": "https://example.com/",
+    "task": "explain what this domain is used for"
+  },
+  {
+    "id": "iana-reserved-domains",
+    "category": "standards",
+    "url": "https://www.iana.org/help/example-domains",
+    "task": "find the purpose of example domains"
+  },
+  {
+    "id": "ietf-rfc9110",
+    "category": "standards",
+    "url": "https://www.rfc-editor.org/rfc/rfc9110",
+    "task": "find what HTTP semantics covers"
+  },
+  {
+    "id": "ietf-rfc9112",
+    "category": "standards",
+    "url": "https://www.rfc-editor.org/rfc/rfc9112",
+    "task": "find what HTTP/1.1 message syntax covers"
+  },
+  {
+    "id": "w3c-json-ld",
+    "category": "standards",
+    "url": "https://www.w3.org/TR/json-ld11/",
+    "task": "find the purpose of JSON-LD"
+  },
+  {
+    "id": "w3c-wcag",
+    "category": "standards",
+    "url": "https://www.w3.org/TR/WCAG22/",
+    "task": "find the purpose and scope of WCAG"
+  },
+  {
+    "id": "whatwg-html",
+    "category": "standards",
+    "url": "https://html.spec.whatwg.org/multipage/",
+    "task": "find what the HTML standard defines"
+  },
+  {
+    "id": "tc39-ecma262",
+    "category": "standards",
+    "url": "https://tc39.es/ecma262/",
+    "task": "find what the ECMAScript specification defines"
+  },
+  {
+    "id": "mdn-fetch-api",
+    "category": "docs",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API",
+    "task": "find what the Fetch API provides"
+  },
+  {
+    "id": "mdn-web-workers",
+    "category": "docs",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API",
+    "task": "find what web workers are used for"
+  },
+  {
+    "id": "mdn-service-worker",
+    "category": "docs",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API",
+    "task": "find what service workers enable"
+  },
+  {
+    "id": "mdn-web-components",
+    "category": "docs",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_components",
+    "task": "find what web components are"
+  },
+  {
+    "id": "node-fs",
+    "category": "docs",
+    "url": "https://nodejs.org/api/fs.html",
+    "task": "find what the fs module provides"
+  },
+  {
+    "id": "node-stream",
+    "category": "docs",
+    "url": "https://nodejs.org/api/stream.html",
+    "task": "find what streams are used for"
+  },
+  {
+    "id": "node-fetch",
+    "category": "docs",
+    "url": "https://nodejs.org/api/globals.html#fetch",
+    "task": "find how fetch is exposed in Node.js"
+  },
+  {
+    "id": "typescript-handbook",
+    "category": "docs",
+    "url": "https://www.typescriptlang.org/docs/handbook/intro.html",
+    "task": "find what the TypeScript handbook introduces"
+  },
+  {
+    "id": "typescript-unions",
+    "category": "docs",
+    "url": "https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html",
+    "task": "find how union and intersection types work"
+  },
+  {
+    "id": "react-learn",
+    "category": "docs",
+    "url": "https://react.dev/learn",
+    "task": "find what the React learning section covers"
+  },
+  {
+    "id": "react-use-state",
+    "category": "docs",
+    "url": "https://react.dev/reference/react/useState",
+    "task": "find what useState does"
+  },
+  {
+    "id": "nextjs-routing",
+    "category": "docs",
+    "url": "https://nextjs.org/docs/app/building-your-application/routing",
+    "task": "find how routing works in the Next.js app router"
+  },
+  {
+    "id": "nextjs-data-fetching",
+    "category": "docs",
+    "url": "https://nextjs.org/docs/app/building-your-application/data-fetching",
+    "task": "find how data fetching works in Next.js"
+  },
+  {
+    "id": "vite-guide",
+    "category": "docs",
+    "url": "https://vite.dev/guide/",
+    "task": "find what Vite provides for frontend development"
+  },
+  {
+    "id": "webpack-concepts",
+    "category": "docs",
+    "url": "https://webpack.js.org/concepts/",
+    "task": "find the core concepts of webpack"
+  },
+  {
+    "id": "rollup-guide",
+    "category": "docs",
+    "url": "https://rollupjs.org/introduction/",
+    "task": "find what Rollup is used for"
+  },
+  {
+    "id": "eslint-getting-started",
+    "category": "docs",
+    "url": "https://eslint.org/docs/latest/use/getting-started",
+    "task": "find how to get started with ESLint"
+  },
+  {
+    "id": "prettier-docs",
+    "category": "docs",
+    "url": "https://prettier.io/docs/",
+    "task": "find what Prettier does"
+  },
+  {
+    "id": "python-tutorial",
+    "category": "docs",
+    "url": "https://docs.python.org/3/tutorial/",
+    "task": "find what the Python tutorial covers"
+  },
+  {
+    "id": "python-asyncio",
+    "category": "docs",
+    "url": "https://docs.python.org/3/library/asyncio.html",
+    "task": "find what asyncio provides"
+  },
+  {
+    "id": "python-venv",
+    "category": "docs",
+    "url": "https://docs.python.org/3/library/venv.html",
+    "task": "find what venv is used for"
+  },
+  {
+    "id": "django-start",
+    "category": "docs",
+    "url": "https://docs.djangoproject.com/en/stable/intro/tutorial01/",
+    "task": "find how to start a Django project"
+  },
+  {
+    "id": "flask-quickstart",
+    "category": "docs",
+    "url": "https://flask.palletsprojects.com/en/stable/quickstart/",
+    "task": "find how to create a minimal Flask application"
+  },
+  {
+    "id": "fastapi-first-steps",
+    "category": "docs",
+    "url": "https://fastapi.tiangolo.com/tutorial/first-steps/",
+    "task": "find the first steps for building a FastAPI app"
+  },
+  {
+    "id": "pydantic-models",
+    "category": "docs",
+    "url": "https://docs.pydantic.dev/latest/concepts/models/",
+    "task": "find what Pydantic models are"
+  },
+  {
+    "id": "sqlalchemy-orm",
+    "category": "docs",
+    "url": "https://docs.sqlalchemy.org/en/20/orm/",
+    "task": "find what the SQLAlchemy ORM provides"
+  },
+  {
+    "id": "rust-book",
+    "category": "docs",
+    "url": "https://doc.rust-lang.org/book/",
+    "task": "find what the Rust book teaches"
+  },
+  {
+    "id": "rust-cargo",
+    "category": "docs",
+    "url": "https://doc.rust-lang.org/cargo/",
+    "task": "find what Cargo does"
+  },
+  {
+    "id": "go-effective",
+    "category": "docs",
+    "url": "https://go.dev/doc/effective_go",
+    "task": "find what Effective Go explains"
+  },
+  {
+    "id": "go-modules",
+    "category": "docs",
+    "url": "https://go.dev/doc/modules/managing-dependencies",
+    "task": "find how Go modules manage dependencies"
+  },
+  {
+    "id": "java-tutorial",
+    "category": "docs",
+    "url": "https://docs.oracle.com/javase/tutorial/",
+    "task": "find what the Java tutorials cover"
+  },
+  {
+    "id": "kotlin-docs",
+    "category": "docs",
+    "url": "https://kotlinlang.org/docs/home.html",
+    "task": "find what Kotlin documentation covers"
+  },
+  {
+    "id": "postgres-select",
+    "category": "docs",
+    "url": "https://www.postgresql.org/docs/current/tutorial-select.html",
+    "task": "find how SELECT queries work in PostgreSQL"
+  },
+  {
+    "id": "postgres-indexes",
+    "category": "docs",
+    "url": "https://www.postgresql.org/docs/current/indexes.html",
+    "task": "find what PostgreSQL indexes do"
+  },
+  {
+    "id": "mysql-tutorial",
+    "category": "docs",
+    "url": "https://dev.mysql.com/doc/refman/8.4/en/tutorial.html",
+    "task": "find what the MySQL tutorial covers"
+  },
+  {
+    "id": "sqlite-lang",
+    "category": "docs",
+    "url": "https://www.sqlite.org/lang.html",
+    "task": "find what SQL syntax SQLite supports"
+  },
+  {
+    "id": "redis-docs",
+    "category": "docs",
+    "url": "https://redis.io/docs/latest/",
+    "task": "find what Redis documentation covers"
+  },
+  {
+    "id": "mongodb-crud",
+    "category": "docs",
+    "url": "https://www.mongodb.com/docs/manual/crud/",
+    "task": "find what CRUD operations are in MongoDB"
+  },
+  {
+    "id": "elasticsearch-intro",
+    "category": "docs",
+    "url": "https://www.elastic.co/guide/en/elasticsearch/reference/current/elasticsearch-intro.html",
+    "task": "find what Elasticsearch is used for"
+  },
+  {
+    "id": "docker-get-started",
+    "category": "docs",
+    "url": "https://docs.docker.com/get-started/",
+    "task": "find how Docker helps build and run applications"
+  },
+  {
+    "id": "docker-compose",
+    "category": "docs",
+    "url": "https://docs.docker.com/compose/",
+    "task": "find what Docker Compose is used for"
+  },
+  {
+    "id": "kubernetes-concepts",
+    "category": "docs",
+    "url": "https://kubernetes.io/docs/concepts/",
+    "task": "find the main Kubernetes concepts"
+  },
+  {
+    "id": "kubernetes-pods",
+    "category": "docs",
+    "url": "https://kubernetes.io/docs/concepts/workloads/pods/",
+    "task": "find what Kubernetes pods are"
+  },
+  {
+    "id": "terraform-intro",
+    "category": "docs",
+    "url": "https://developer.hashicorp.com/terraform/intro",
+    "task": "find what Terraform does"
+  },
+  {
+    "id": "ansible-get-started",
+    "category": "docs",
+    "url": "https://docs.ansible.com/ansible/latest/getting_started/index.html",
+    "task": "find how to get started with Ansible"
+  },
+  {
+    "id": "git-book",
+    "category": "docs",
+    "url": "https://git-scm.com/book/en/v2",
+    "task": "find what the Pro Git book covers"
+  },
+  {
+    "id": "github-actions",
+    "category": "docs",
+    "url": "https://docs.github.com/en/actions",
+    "task": "find what GitHub Actions is used for"
+  },
+  {
+    "id": "gitlab-ci",
+    "category": "docs",
+    "url": "https://docs.gitlab.com/ci/",
+    "task": "find what GitLab CI/CD does"
+  },
+  {
+    "id": "cloudflare-workers",
+    "category": "docs",
+    "url": "https://developers.cloudflare.com/workers/",
+    "task": "find what Cloudflare Workers are"
+  },
+  {
+    "id": "vercel-docs",
+    "category": "docs",
+    "url": "https://vercel.com/docs",
+    "task": "find what Vercel documentation covers"
+  },
+  {
+    "id": "netlify-functions",
+    "category": "docs",
+    "url": "https://docs.netlify.com/functions/overview/",
+    "task": "find what Netlify Functions are"
+  },
+  {
+    "id": "aws-lambda",
+    "category": "docs",
+    "url": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html",
+    "task": "find what AWS Lambda is"
+  },
+  {
+    "id": "aws-s3",
+    "category": "docs",
+    "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+    "task": "find what Amazon S3 provides"
+  },
+  {
+    "id": "azure-functions",
+    "category": "docs",
+    "url": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview",
+    "task": "find what Azure Functions are"
+  },
+  {
+    "id": "google-cloud-run",
+    "category": "docs",
+    "url": "https://cloud.google.com/run/docs/overview/what-is-cloud-run",
+    "task": "find what Cloud Run is"
+  },
+  {
+    "id": "stripe-api",
+    "category": "docs",
+    "url": "https://docs.stripe.com/api",
+    "task": "find what the Stripe API documentation covers"
+  },
+  {
+    "id": "twilio-sms",
+    "category": "docs",
+    "url": "https://www.twilio.com/docs/messaging",
+    "task": "find what Twilio Messaging provides"
+  },
+  {
+    "id": "slack-api",
+    "category": "docs",
+    "url": "https://api.slack.com/start",
+    "task": "find how Slack API apps work"
+  },
+  {
+    "id": "notion-api",
+    "category": "docs",
+    "url": "https://developers.notion.com/docs/getting-started",
+    "task": "find how to get started with the Notion API"
+  },
+  {
+    "id": "shopify-api",
+    "category": "docs",
+    "url": "https://shopify.dev/docs/api",
+    "task": "find what Shopify APIs cover"
+  },
+  {
+    "id": "openapi-spec",
+    "category": "standards",
+    "url": "https://spec.openapis.org/oas/latest.html",
+    "task": "find what the OpenAPI Specification defines"
+  },
+  {
+    "id": "graphql-learn",
+    "category": "docs",
+    "url": "https://graphql.org/learn/",
+    "task": "find what GraphQL is and how it works"
+  },
+  {
+    "id": "oauth-rfc",
+    "category": "standards",
+    "url": "https://www.rfc-editor.org/rfc/rfc6749",
+    "task": "find what OAuth 2.0 defines"
+  },
+  {
+    "id": "jwt-rfc",
+    "category": "standards",
+    "url": "https://www.rfc-editor.org/rfc/rfc7519",
+    "task": "find what JSON Web Tokens are"
+  },
+  {
+    "id": "nist-csf",
+    "category": "government",
+    "url": "https://www.nist.gov/cyberframework",
+    "task": "find what the NIST Cybersecurity Framework is"
+  },
+  {
+    "id": "cisa-secure-by-design",
+    "category": "government",
+    "url": "https://www.cisa.gov/securebydesign",
+    "task": "find what secure by design means"
+  },
+  {
+    "id": "ftc-business-guidance",
+    "category": "government",
+    "url": "https://www.ftc.gov/business-guidance",
+    "task": "find what FTC business guidance provides"
+  },
+  {
+    "id": "irs-small-business",
+    "category": "government",
+    "url": "https://www.irs.gov/businesses/small-businesses-self-employed",
+    "task": "find what resources are available for small businesses"
+  },
+  {
+    "id": "usa-gov",
+    "category": "government",
+    "url": "https://www.usa.gov/",
+    "task": "find what USA.gov helps people do"
+  },
+  {
+    "id": "cdc-vaccines",
+    "category": "government",
+    "url": "https://www.cdc.gov/vaccines/",
+    "task": "find what CDC vaccine resources cover"
+  },
+  {
+    "id": "nih-health-info",
+    "category": "government",
+    "url": "https://www.nih.gov/health-information",
+    "task": "find what NIH health information provides"
+  },
+  {
+    "id": "nasa-missions",
+    "category": "government",
+    "url": "https://www.nasa.gov/missions/",
+    "task": "find what NASA missions page covers"
+  },
+  {
+    "id": "uspto-patents",
+    "category": "government",
+    "url": "https://www.uspto.gov/patents",
+    "task": "find what patent resources USPTO provides"
+  },
+  {
+    "id": "sec-investor",
+    "category": "government",
+    "url": "https://www.investor.gov/",
+    "task": "find what Investor.gov helps investors do"
+  },
+  {
+    "id": "wikipedia-http",
+    "category": "article",
+    "url": "https://en.wikipedia.org/wiki/HTTP",
+    "task": "find what HTTP is"
+  },
+  {
+    "id": "wikipedia-web-browser",
+    "category": "article",
+    "url": "https://en.wikipedia.org/wiki/Web_browser",
+    "task": "find what a web browser is"
+  },
+  {
+    "id": "wikipedia-search-engine",
+    "category": "article",
+    "url": "https://en.wikipedia.org/wiki/Search_engine",
+    "task": "find what search engines do"
+  },
+  {
+    "id": "wikipedia-web-crawler",
+    "category": "article",
+    "url": "https://en.wikipedia.org/wiki/Web_crawler",
+    "task": "find what web crawlers do"
+  },
+  {
+    "id": "wikipedia-rag",
+    "category": "article",
+    "url": "https://en.wikipedia.org/wiki/Retrieval-augmented_generation",
+    "task": "find what retrieval augmented generation is"
+  },
+  {
+    "id": "wikipedia-vector-db",
+    "category": "article",
+    "url": "https://en.wikipedia.org/wiki/Vector_database",
+    "task": "find what vector databases are"
+  },
+  {
+    "id": "arxiv-rag",
+    "category": "paper",
+    "url": "https://arxiv.org/abs/2005.11401",
+    "task": "find the main idea of retrieval augmented generation"
+  },
+  {
+    "id": "arxiv-lost-middle",
+    "category": "paper",
+    "url": "https://arxiv.org/abs/2307.03172",
+    "task": "find what lost in the middle studies"
+  },
+  {
+    "id": "arxiv-colbert",
+    "category": "paper",
+    "url": "https://arxiv.org/abs/2004.12832",
+    "task": "find what ColBERT does"
+  },
+  {
+    "id": "arxiv-crag",
+    "category": "paper",
+    "url": "https://arxiv.org/abs/2401.15884",
+    "task": "find what corrective RAG tries to improve"
+  },
+  {
+    "id": "owasp-top10-llm",
+    "category": "security",
+    "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
+    "task": "find what the OWASP Top 10 for LLM applications covers"
+  },
+  {
+    "id": "owasp-api-security",
+    "category": "security",
+    "url": "https://owasp.org/www-project-api-security/",
+    "task": "find what the OWASP API Security project covers"
+  },
+  {
+    "id": "mitre-attack",
+    "category": "security",
+    "url": "https://attack.mitre.org/",
+    "task": "find what MITRE ATT&CK is"
+  },
+  {
+    "id": "mozilla-observatory",
+    "category": "security",
+    "url": "https://developer.mozilla.org/en-US/observatory",
+    "task": "find what Mozilla Observatory helps evaluate"
+  },
+  {
+    "id": "prometheus-overview",
+    "category": "docs",
+    "url": "https://prometheus.io/docs/introduction/overview/",
+    "task": "find what Prometheus is used for"
+  },
+  {
+    "id": "grafana-docs",
+    "category": "docs",
+    "url": "https://grafana.com/docs/grafana/latest/",
+    "task": "find what Grafana documentation covers"
+  },
+  {
+    "id": "opentelemetry-docs",
+    "category": "docs",
+    "url": "https://opentelemetry.io/docs/",
+    "task": "find what OpenTelemetry provides"
+  },
+  {
+    "id": "nginx-docs",
+    "category": "docs",
+    "url": "https://docs.nginx.com/nginx/admin-guide/",
+    "task": "find what the NGINX admin guide covers"
+  }
+]

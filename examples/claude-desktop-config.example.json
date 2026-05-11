@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "internet-context": {
+      "command": "node",
+      "args": ["C:/Users/domai/internet-context-mcp/dist/index.js"],
+      "env": {
+        "BRAVE_SEARCH_API_KEY": ""
+      }
+    }
+  }
+}

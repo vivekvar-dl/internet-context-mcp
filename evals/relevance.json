@@ -1,0 +1,162 @@
+[
+  {
+    "id": "example-domain",
+    "url": "https://example.com/",
+    "task": "explain what this domain is used for",
+    "must_include": ["documentation examples", "without needing permission"],
+    "must_not_include": ["cookie", "advertisement"],
+    "max_tokens": 500
+  },
+  {
+    "id": "iana-reserved-domains",
+    "url": "https://www.iana.org/help/example-domains",
+    "task": "find the purpose of example domains",
+    "must_include": ["documentation", "examples"],
+    "must_not_include": ["domain registration", "purchase"],
+    "max_tokens": 800
+  },
+  {
+    "id": "ietf-rfc9110",
+    "url": "https://www.rfc-editor.org/rfc/rfc9110",
+    "task": "find what HTTP semantics covers",
+    "must_include": ["HTTP", "semantics"],
+    "must_not_include": ["shopping cart", "advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "w3c-json-ld",
+    "url": "https://www.w3.org/TR/json-ld11/",
+    "task": "find the purpose of JSON-LD",
+    "must_include": ["JSON-LD", "Linked Data"],
+    "must_not_include": ["cookie", "newsletter"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "mdn-fetch-api",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API",
+    "task": "find what the Fetch API provides",
+    "must_include": ["Fetch API", "requests"],
+    "must_not_include": ["advertisement", "newsletter"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "node-fs",
+    "url": "https://nodejs.org/api/fs.html",
+    "task": "find what the fs module provides",
+    "must_include": ["file system", "fs"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "react-use-state",
+    "url": "https://react.dev/reference/react/useState",
+    "task": "find what useState does",
+    "must_include": ["state", "component"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "typescript-unions",
+    "url": "https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html",
+    "task": "find how union and intersection types work",
+    "must_include": ["union", "intersection"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "python-venv",
+    "url": "https://docs.python.org/3/library/venv.html",
+    "task": "find what venv is used for",
+    "must_include": ["virtual environment", "venv"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "fastapi-first-steps",
+    "url": "https://fastapi.tiangolo.com/tutorial/first-steps/",
+    "task": "find the first steps for building a FastAPI app",
+    "must_include": ["FastAPI", "app"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "rust-cargo",
+    "url": "https://doc.rust-lang.org/cargo/",
+    "task": "find what Cargo does",
+    "must_include": ["Cargo", "package"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "postgres-indexes",
+    "url": "https://www.postgresql.org/docs/current/indexes.html",
+    "task": "find what PostgreSQL indexes do",
+    "must_include": ["indexes", "database performance"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "docker-compose",
+    "url": "https://docs.docker.com/compose/",
+    "task": "find what Docker Compose is used for",
+    "must_include": ["Compose", "Docker"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "kubernetes-pods",
+    "url": "https://kubernetes.io/docs/concepts/workloads/pods/",
+    "task": "find what Kubernetes pods are",
+    "must_include": ["Pods", "Kubernetes"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "github-actions",
+    "url": "https://docs.github.com/en/actions",
+    "task": "find what GitHub Actions is used for",
+    "must_include": ["GitHub Actions", "workflows"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "cloudflare-workers",
+    "url": "https://developers.cloudflare.com/workers/",
+    "task": "find what Cloudflare Workers are",
+    "must_include": ["Workers", "serverless"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "openapi-spec",
+    "url": "https://spec.openapis.org/oas/latest.html",
+    "task": "find what the OpenAPI Specification defines",
+    "must_include": ["OpenAPI", "Specification"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "oauth-rfc",
+    "url": "https://www.rfc-editor.org/rfc/rfc6749",
+    "task": "find what OAuth 2.0 defines",
+    "must_include": ["OAuth", "authorization"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "wikipedia-web-crawler",
+    "url": "https://en.wikipedia.org/wiki/Web_crawler",
+    "task": "find what web crawlers do",
+    "must_include": ["web crawler", "World Wide Web"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  },
+  {
+    "id": "arxiv-rag",
+    "url": "https://arxiv.org/abs/2005.11401",
+    "task": "find the main idea of retrieval augmented generation",
+    "must_include": ["retrieval", "generation"],
+    "must_not_include": ["advertisement"],
+    "max_tokens": 1200
+  }
+]
