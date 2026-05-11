@@ -10,29 +10,46 @@ Measured, not aspirational: 20/20 relevance eval pass, 92.5% prompt-injection re
 
 ## Quick start
 
-```bash
-git clone https://github.com/vivekvar-dl/internet-context-mcp
-cd internet-context-mcp
-npm install
-npm run build
-# Optional but recommended on first run: warm the local models.
-node dist/index.js   # exits when stdin closes — used by the MCP host
-```
-
-Wire it into Claude Desktop / Claude Code via `claude_desktop_config.json`:
+Add this to your `claude_desktop_config.json` (or equivalent MCP-host config):
 
 ```json
 {
   "mcpServers": {
     "internet-context": {
-      "command": "node",
-      "args": ["/absolute/path/to/internet-context-mcp/dist/index.js"]
+      "command": "npx",
+      "args": ["-y", "internet-context-mcp"]
     }
   }
 }
 ```
 
+Restart the host. That's it.
+
 First call lazy-downloads three local models from HuggingFace (~125 MB total, cached): the cross-encoder reranker, NLI classifier, and sentence-embedding model. Once cached, the server runs fully offline. No API keys required at any point.
+
+### Optional environment variables
+
+```jsonc
+{
+  "env": {
+    "BRAVE_SEARCH_API_KEY": "",                  // optional: use Brave instead of the DDG fallback
+    "INTERNET_CONTEXT_MCP_RERANK": "0",          // optional: disable the cross-encoder reranker
+    "INTERNET_CONTEXT_MCP_NLI": "0",             // optional: disable NLI for web_verify
+    "INTERNET_CONTEXT_MCP_EMBEDDINGS": "0",      // optional: disable semantic clustering / contradictions
+    "INTERNET_CONTEXT_MCP_CACHE_DIR": ""         // optional: override SQLite cache path
+  }
+}
+```
+
+### Run locally from source (developers)
+
+```bash
+git clone https://github.com/vivekvar-dl/internet-context-mcp
+cd internet-context-mcp
+npm install
+npm run build
+node dist/index.js   # exits when stdin closes — used by the MCP host
+```
 
 ## What's in v0.4.x
 

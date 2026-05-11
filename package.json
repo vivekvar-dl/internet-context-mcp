@@ -1,14 +1,40 @@
 {
   "name": "internet-context-mcp",
   "version": "0.4.2",
-  "description": "Clean, compact web context tools for AI agents over MCP.",
+  "description": "Read-only MCP server giving AI agents the web as compact, ranked, verified evidence. Local cross-encoder reranker, NLI claim verification, semantic cross-source agreement and contradiction detection. No API keys.",
   "type": "module",
   "bin": {
     "internet-context-mcp": "./dist/index.js"
   },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "ai-agents",
+    "claude",
+    "anthropic",
+    "llm",
+    "rag",
+    "retrieval",
+    "prompt-injection",
+    "nli",
+    "claim-verification",
+    "web-research"
+  ],
+  "author": "Vivek Varikuti",
+  "homepage": "https://github.com/vivekvar-dl/internet-context-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vivekvar-dl/internet-context-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vivekvar-dl/internet-context-mcp/issues"
+  },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc",
@@ -19,7 +45,8 @@
     "stress:real": "tsx scripts/stress-real-sites.ts",
     "start": "node dist/index.js",
     "test": "npm run typecheck && npm run eval:ranking",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run typecheck && npm run build"
   },
   "dependencies": {
     "@huggingface/transformers": "^3.8.1",
