@@ -1,30 +1,71 @@
 # internet-context-mcp
 
-Clean, compact web context capsules for AI agents.
+**A read-only MCP server that gives AI agents the web as compact, ranked, verified evidence — no API keys, no cloud retrieval, all models local.**
 
-This MCP server gives agents read-only internet tools without dumping raw HTML into the model context. The main idea is simple: fetch a page, remove noise, rank the useful chunks for the current task, and return a context capsule the host agent can reason over.
+[![MCP](https://img.shields.io/badge/MCP-1.x-blue)](https://modelcontextprotocol.io) [![Node](https://img.shields.io/badge/node-%E2%89%A520-brightgreen)](https://nodejs.org) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE) [![Version](https://img.shields.io/badge/version-0.4.2-informational)](./CHANGELOG.md)
 
-A context capsule includes:
+Six read-only tools — `web_research`, `web_context`, `web_search`, `web_read`, `web_verify`, `web_extract` — plus MCP resources, prompts, and proper `outputSchema` / `readOnlyHint` metadata. Behind each tool: local BM25 ranking, a local cross-encoder reranker, a local NLI classifier, local sentence embeddings, a regex prompt-injection scanner, and a two-tier (in-memory + SQLite) fetch cache.
+
+Measured, not aspirational: 20/20 relevance eval pass, 92.5% prompt-injection recall at 0% false-positive rate on benign pages, contradiction detector with 0 false positives on real-world web (see [eval table](#detector-evaluation--measured-not-aspirational) below).
+
+## Quick start
+
+```bash
+git clone https://github.com/vivekvar-dl/internet-context-mcp
+cd internet-context-mcp
+npm install
+npm run build
+# Optional but recommended on first run: warm the local models.
+node dist/index.js   # exits when stdin closes — used by the MCP host
+```
+
+Wire it into Claude Desktop / Claude Code via `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "internet-context": {
+      "command": "node",
+      "args": ["/absolute/path/to/internet-context-mcp/dist/index.js"]
+    }
+  }
+}
+```
+
+First call lazy-downloads three local models from HuggingFace (~125 MB total, cached): the cross-encoder reranker, NLI classifier, and sentence-embedding model. Once cached, the server runs fully offline. No API keys required at any point.
+
+## What's in v0.4.x
+
+- `web_research` — one-shot search + multi-source fetch + cross-source ranking + per-chunk citations + redundancy-based agreement signal + NLI-backed contradiction detection.
+- `web_verify` — claim-vs-sources verification, NLI-classifier-backed (entailment / neutral / contradiction), regex fallback.
+- `web_context` — fetch + rank + return ranked evidence chunks with priority capsule (TL;DR), retrieval-confidence signal, structured-data extraction, prompt-injection scan, source provenance with DOM paths.
+- `web_read` — clean compact page text with token-savings metadata.
+- `web_search` — Brave when `BRAVE_SEARCH_API_KEY` is set; DuckDuckGo HTML fallback otherwise.
+- `web_extract` — best-effort schema-driven extraction.
+
+Plus:
+
+- `readOnlyHint: true` + `openWorldHint: true` annotations on every tool. Claude Desktop / Code can skip permission prompts.
+- `outputSchema` on every tool. Hosts get typed JSON (`structuredContent`) instead of re-parsing free-form text.
+- `internet-context://page/{fingerprint}` MCP resource template — the host can re-reference fetched pages by URI without re-calling a tool.
+- `verify_with_sources`, `summarize_from_context`, `research_a_topic` MCP prompt templates.
+- Two-tier fetch cache: in-memory + a persistent SQLite layer at `~/.cache/internet-context-mcp/cache.sqlite`. Survives across host restarts.
+- Real `js-tiktoken` tokenizer (cl100k_base). No more `chars / 4` approximations.
+- Optional Playwright rendering for JS-heavy SPAs via `render: "browser"`, shipped as an `optionalDependency`.
+
+See [`CHANGELOG.md`](./CHANGELOG.md) for the per-version detail.
+
+## What's inside a context capsule
+
+A `web_context` response includes:
 
 - a short priority capsule (TL;DR) before the long evidence
-- ranked evidence chunks
+- ranked evidence chunks with character offsets, section paths, and DOM paths
 - a retrieval confidence signal so the agent can ask for more sources when needed
-- structured data from the page, when present
+- structured data from the page, when present (JSON-LD, microdata, metadata)
 - page metadata and content fingerprints
-- prompt-injection risk warnings
+- prompt-injection risk warnings (visible / hidden / comment / metadata)
 - token savings estimates
-
-Every tool ships with proper MCP metadata so hosts can use it cleanly:
-
-- `readOnlyHint: true` + `openWorldHint: true` annotations — Claude Desktop / Claude Code can skip permission prompts for these tools.
-- `outputSchema` on every tool — hosts get typed JSON (`structuredContent`) instead of re-parsing free-form text.
-- `internet-context://page/<fingerprint>` MCP resources — the host can re-reference fetched pages by URI without re-calling a tool.
-- `verify_with_sources` and `summarize_from_context` MCP prompts — slash-command surface for hosts that expose prompt templates.
-- Two-tier fetch cache: in-memory + a persistent SQLite layer at `~/.cache/internet-context-mcp/cache.sqlite`. Survives across host restarts.
-- Real tokenizer via `js-tiktoken` (cl100k_base). No more `chars / 4` approximations.
-- Optional Playwright rendering for JS-heavy pages, gated behind `render: "browser"` and shipped only as an `optionalDependency`.
-- Local cross-encoder reranker (`Xenova/ms-marco-MiniLM-L-6-v2`) via Transformers.js — **on by default** as of v0.3.0, lazy-loaded at server start. Pass `rerank: false` per call or set `INTERNET_CONTEXT_MCP_RERANK=0` to disable.
-- Local NLI classifier (`Xenova/nli-deberta-v3-xsmall`, zero-shot-classification) backs `web_verify` — on by default with a regex fallback if the model fails to load. Disable with `INTERNET_CONTEXT_MCP_NLI=0`.
 
 ## Tools
 
