@@ -2,8 +2,9 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as cheerio from "cheerio";
 import { z } from "zod";
 import { fetchPage } from "../lib/fetch-page.js";
-import { jsonContent } from "../lib/mcp-response.js";
+import { structuredJsonContent } from "../lib/mcp-response.js";
 import { classifySource } from "../lib/source-quality.js";
+import { READ_ONLY_ANNOTATIONS, webSearchOutputShape } from "./schemas.js";
 
 interface SearchResult {
   title: string;
@@ -13,25 +14,34 @@ interface SearchResult {
 }
 
 export function registerWebSearchTool(server: McpServer): void {
-  server.tool(
+  server.registerTool(
     "web_search",
-    "Search the web and return compact, source-classified results. Uses BRAVE_SEARCH_API_KEY when available, otherwise DuckDuckGo HTML fallback.",
     {
-      query: z.string().min(1).describe("Search query."),
-      limit: z
-        .number()
-        .int()
-        .min(1)
-        .max(20)
-        .default(5)
-        .describe("Maximum number of search results to return."),
-      timeout_ms: z
-        .number()
-        .int()
-        .min(1_000)
-        .max(60_000)
-        .default(15_000)
-        .describe("Search timeout in milliseconds."),
+      title: "Web search",
+      description: [
+        "Search the web and return compact, source-classified results.",
+        "Use when: you do not yet have a URL and need to discover sources for a topic.",
+        "Uses BRAVE_SEARCH_API_KEY when set, otherwise DuckDuckGo HTML fallback.",
+      ].join(" "),
+      annotations: { ...READ_ONLY_ANNOTATIONS, title: "Web search" },
+      inputSchema: {
+        query: z.string().min(1).describe("Search query."),
+        limit: z
+          .number()
+          .int()
+          .min(1)
+          .max(20)
+          .default(5)
+          .describe("Maximum number of search results to return."),
+        timeout_ms: z
+          .number()
+          .int()
+          .min(1_000)
+          .max(60_000)
+          .default(15_000)
+          .describe("Search timeout in milliseconds."),
+      },
+      outputSchema: webSearchOutputShape,
     },
     async ({ query, limit, timeout_ms }) => {
       const provider = process.env.BRAVE_SEARCH_API_KEY
@@ -42,7 +52,7 @@ export function registerWebSearchTool(server: McpServer): void {
           ? await braveSearch(query, limit, timeout_ms)
           : await duckDuckGoSearch(query, limit, timeout_ms);
 
-      return jsonContent({
+      return structuredJsonContent({
         query,
         provider,
         results,
@@ -117,7 +127,7 @@ async function duckDuckGoSearch(
   const fetched = await fetchPage(searchUrl, {
     timeoutMs,
     userAgent:
-      "Mozilla/5.0 (compatible; internet-context-mcp/0.1; +https://github.com/local/internet-context-mcp)",
+      "Mozilla/5.0 (compatible; internet-context-mcp/0.2; +https://github.com/local/internet-context-mcp)",
   });
   const $ = cheerio.load(fetched.body);
   const results: SearchResult[] = [];

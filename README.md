@@ -6,11 +6,24 @@ This MCP server gives agents read-only internet tools without dumping raw HTML i
 
 A context capsule includes:
 
+- a short priority capsule (TL;DR) before the long evidence
 - ranked evidence chunks
+- a retrieval confidence signal so the agent can ask for more sources when needed
 - structured data from the page, when present
 - page metadata and content fingerprints
 - prompt-injection risk warnings
 - token savings estimates
+
+Every tool ships with proper MCP metadata so hosts can use it cleanly:
+
+- `readOnlyHint: true` + `openWorldHint: true` annotations — Claude Desktop / Claude Code can skip permission prompts for these tools.
+- `outputSchema` on every tool — hosts get typed JSON (`structuredContent`) instead of re-parsing free-form text.
+- `internet-context://page/<fingerprint>` MCP resources — the host can re-reference fetched pages by URI without re-calling a tool.
+- `verify_with_sources` and `summarize_from_context` MCP prompts — slash-command surface for hosts that expose prompt templates.
+- Two-tier fetch cache: in-memory + a persistent SQLite layer at `~/.cache/internet-context-mcp/cache.sqlite`. Survives across host restarts.
+- Real tokenizer via `js-tiktoken` (cl100k_base). No more `chars / 4` approximations.
+- Optional Playwright rendering for JS-heavy pages, gated behind `render: "browser"` and shipped only as an `optionalDependency`.
+- Optional local cross-encoder reranker (`Xenova/ms-marco-MiniLM-L-6-v2`) via Transformers.js. Off by default; opt in with `rerank: true` or `INTERNET_CONTEXT_MCP_RERANK=1`.
 
 ## Tools
 
@@ -80,6 +93,17 @@ Output shape:
     "score": 0,
     "warnings": []
   },
+  "priority_capsule": {
+    "tldr": "Install with npm install example. Configure via the MCP client config file.",
+    "top_sections": ["Installation", "Configuration"],
+    "highlight_chunk_ids": [2, 3]
+  },
+  "retrieval_confidence": {
+    "level": "high",
+    "score": 0.78,
+    "reasons": [],
+    "suggestion": null
+  },
   "provenance": {
     "content_fingerprint": "9f2a1c6e7b0d3a11",
     "clean_text_fingerprint": "3d41e2f0780a5c19"
@@ -127,6 +151,54 @@ Input:
 {
   "query": "Model Context Protocol TypeScript SDK docs",
   "limit": 5
+}
+```
+
+### `web_verify`
+
+Checks whether a claim is supported, refuted, or unclear from one or more source URLs. Fetches each source, ranks chunks against the claim, and looks for explicit support or contradiction (with simple negation detection near matched terms). Returns a combined verdict plus per-source supporting and refuting evidence chunks.
+
+Input:
+
+```json
+{
+  "claim": "the server is read-only",
+  "sources": [
+    "https://example.com/docs",
+    "https://example.com/safety"
+  ],
+  "max_tokens_per_source": 1400
+}
+```
+
+Output shape:
+
+```json
+{
+  "claim": "the server is read-only",
+  "verdict": "supported",
+  "confidence": 0.82,
+  "reasons": ["2_sources_support"],
+  "sources": [
+    {
+      "requested_url": "https://example.com/docs",
+      "final_url": "https://example.com/docs",
+      "title": "Documentation",
+      "verdict": "supported",
+      "confidence": 0.74,
+      "supporting_chunks": [
+        {
+          "chunk_id": 3,
+          "section": "Safety",
+          "score": 0.91,
+          "matched_terms": ["server", "read", "only"],
+          "contains_negation": false,
+          "text_preview": "The default tools are read-only and never submit forms or modify remote data."
+        }
+      ],
+      "refuting_chunks": []
+    }
+  ]
 }
 ```
 
@@ -249,10 +321,27 @@ For clients that accept JSON MCP server config:
 
 This is an early open-source prototype. The strongest part is `web_context`: local cleanup, chunking, ranking, structured-data discovery, safety scanning, and token reduction. The weakest part is generic structured extraction without an LLM, so that tool should stay secondary until it has real eval coverage.
 
+## Configuration
+
+Environment variables:
+
+- `BRAVE_SEARCH_API_KEY` — if set, `web_search` uses Brave Search instead of the DuckDuckGo HTML fallback.
+- `INTERNET_CONTEXT_MCP_RERANK=1` — enable the local cross-encoder reranker globally. Off by default.
+- `INTERNET_CONTEXT_MCP_CACHE_DIR` — override the SQLite cache location. Defaults to `~/.cache/internet-context-mcp`.
+
+To enable browser rendering (only needed for JS-rendered SPAs):
+
+```bash
+npm install playwright
+npx playwright install chromium
+```
+
+Then call any tool with `render: "browser"`.
+
 ## Next Milestones
 
-1. Add more neutral eval fixtures for docs, articles, search pages, and reference pages.
-2. Improve chunk provenance with line/offset ranges and DOM hints.
-3. Add hybrid ranking: BM25 + metadata boost + optional embedding/cross-encoder reranker.
-4. Add cache support to avoid repeated fetches.
-5. Add `web_verify(claim, sources)` for evidence checking.
+1. Multi-sentence claim decomposition in `web_verify` so compound claims return per-clause verdicts.
+2. Stable text-fragment anchors (`#:~:text=...`) in chunk provenance for deep-linking back to the page.
+3. PDF support for the fetch + clean pipeline.
+4. `robots.txt` + crawl-delay awareness for responsible read-only fetching.
+5. Adversarial prompt-injection eval set replacing the small hand-written regex set.

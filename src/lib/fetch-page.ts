@@ -1,3 +1,5 @@
+import { cacheKey, getCached, setCached } from "./fetch-cache.js";
+
 export interface FetchedPage {
   requested_url: string;
   final_url: string;
@@ -8,6 +10,7 @@ export interface FetchedPage {
   timed_out: boolean;
   bytes_read: number;
   max_bytes: number;
+  from_cache?: boolean;
 }
 
 export interface FetchPageOptions {
@@ -17,6 +20,8 @@ export interface FetchPageOptions {
   onMaxBytes?: "truncate" | "error";
   retries?: number;
   retryDelayMs?: number;
+  cache?: boolean;
+  render?: "static" | "browser";
 }
 
 const DEFAULT_USER_AGENT =
@@ -26,13 +31,46 @@ export async function fetchPage(
   url: string,
   options: FetchPageOptions = {},
 ): Promise<FetchedPage> {
+  const useCache = options.cache !== false;
+  const render = options.render ?? "static";
+  const key = cacheKey(url, `${options.userAgent ?? ""}|render=${render}`);
+
+  if (useCache) {
+    const cached = getCached(key);
+
+    if (cached) {
+      return { ...cached, from_cache: true };
+    }
+  }
+
+  if (render === "browser") {
+    const { renderWithBrowser } = await import("./render-browser.js");
+    const page = await renderWithBrowser(url, {
+      timeoutMs: options.timeoutMs ?? 15_000,
+      userAgent: options.userAgent ?? DEFAULT_USER_AGENT,
+      maxBytes: options.maxBytes ?? 5_000_000,
+    });
+
+    if (useCache && page.status >= 200 && page.status < 300) {
+      setCached(key, page);
+    }
+
+    return page;
+  }
+
   const retries = options.retries ?? 0;
   const retryDelayMs = options.retryDelayMs ?? 750;
   let lastError: unknown;
 
   for (let attempt = 0; attempt <= retries; attempt += 1) {
     try {
-      return await fetchPageOnce(url, options);
+      const page = await fetchPageOnce(url, options);
+
+      if (useCache && page.status >= 200 && page.status < 300) {
+        setCached(key, page);
+      }
+
+      return page;
     } catch (error) {
       lastError = error;
 

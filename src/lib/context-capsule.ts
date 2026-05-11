@@ -2,7 +2,10 @@ import { rankChunksForTask, selectRankedChunks } from "./chunk-ranking.js";
 import { cleanPageContent } from "./clean-html.js";
 import { fetchPage } from "./fetch-page.js";
 import { shortFingerprint } from "./fingerprint.js";
+import { buildPriorityCapsule } from "./priority-capsule.js";
 import { scanForPromptInjection } from "./prompt-injection-scan.js";
+import { rerankChunks, rerankerEnabled } from "./reranker.js";
+import { assessRetrievalConfidence } from "./retrieval-confidence.js";
 import { mapChunkToSourceBlocks } from "./source-provenance.js";
 import { extractStructuredData } from "./structured-data.js";
 import type { StructuredDataSummary } from "./structured-data.js";
@@ -16,6 +19,8 @@ export interface BuildContextCapsuleOptions {
   timeoutMs?: number;
   maxBytes?: number;
   userAgent?: string;
+  render?: "static" | "browser";
+  rerank?: boolean;
 }
 
 export async function buildContextCapsule(options: BuildContextCapsuleOptions) {
@@ -26,19 +31,26 @@ export async function buildContextCapsule(options: BuildContextCapsuleOptions) {
     retries: 1,
     retryDelayMs: 1_000,
     userAgent: options.userAgent,
+    render: options.render,
   });
   const cleaned = cleanPageContent(fetched.body, fetched.final_url);
   const structuredData = extractStructuredData(fetched.body, fetched.final_url);
   const safety = scanForPromptInjection(fetched.body, cleaned.text);
   const sourceText = cleaned.text.trim() || fallbackContextText(structuredData);
-  const rankedChunks = rankChunksForTask(sourceText, options.task, {
+  let rankedChunks = rankChunksForTask(sourceText, options.task, {
     headings: cleaned.headings,
     metadataText: metadataText(structuredData),
     structuredDataText: structuredDataText(structuredData),
   });
+
+  const shouldRerank = options.rerank ?? rerankerEnabled();
+  if (shouldRerank && rankedChunks.length > 1) {
+    rankedChunks = await rerankChunks(options.task, rankedChunks);
+  }
+  const maxTokens = options.maxTokens ?? 1_800;
   const selectedChunks = selectRankedChunks(
     rankedChunks,
-    options.maxTokens ?? 1_800,
+    maxTokens,
     options.minScore ?? 0.05,
   );
   const context = selectedChunks
@@ -47,6 +59,13 @@ export async function buildContextCapsule(options: BuildContextCapsuleOptions) {
         `[chunk ${chunk.id} | score ${chunk.normalized_score}]\n${chunk.text}`,
     )
     .join("\n\n---\n\n");
+  const priority = buildPriorityCapsule(selectedChunks);
+  const confidence = assessRetrievalConfidence({
+    task: options.task,
+    rankedChunks,
+    selectedChunks,
+    maxTokens,
+  });
 
   return {
     task: options.task,
@@ -64,9 +83,12 @@ export async function buildContextCapsule(options: BuildContextCapsuleOptions) {
       timed_out: fetched.timed_out,
       bytes_read: fetched.bytes_read,
       max_bytes: fetched.max_bytes,
+      from_cache: fetched.from_cache ?? false,
     },
     structured_data: structuredData,
     safety,
+    priority_capsule: priority,
+    retrieval_confidence: confidence,
     context,
     evidence_chunks: selectedChunks.map((chunk) => ({
       id: chunk.id,

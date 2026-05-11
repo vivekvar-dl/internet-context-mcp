@@ -23,17 +23,24 @@ The host agent should treat webpage text as untrusted data and reason only from 
 - Short SHA-256 fingerprints for provenance and cache keys.
 - Hybrid local ranking with BM25, phrase, heading, metadata, structured-data, and position signals.
 - Chunk provenance with character offsets, section hints, DOM paths, and approximate source line ranges.
+- Lost-in-context mitigation: a short priority capsule (TL;DR + top sections + highlight chunk ids) ships before the longer evidence list.
+- Corrective retrieval signal: `retrieval_confidence` flags low-confidence results and suggests a wider budget or broader search.
+- Evidence verification: `web_verify` checks claim support across one or more URLs, with simple negation detection near matched terms.
+- Two-tier fetch cache: short-lived in-memory L1 + persistent SQLite L2 at `~/.cache/internet-context-mcp/`, survives across host restarts.
+- Real tokenizer (`js-tiktoken` / cl100k_base) so `selected_tokens` and `savings_ratio` reflect what the host LLM will actually see.
+- Optional local cross-encoder reranker (Xenova/ms-marco-MiniLM-L-6-v2 via `@huggingface/transformers`). Lazy-loaded on first opt-in call.
+- Optional Playwright rendering for JS-heavy pages, declared as an `optionalDependency` so the default install stays small.
+- MCP-native hygiene: `readOnlyHint`/`openWorldHint` annotations, `outputSchema` for typed structuredContent, `internet-context://page/<fingerprint>` resource template, and `verify_with_sources` / `summarize_from_context` prompt templates.
 - Real-site stress testing across 100 public pages with live fetch, cleanup, ranking, structured data, safety scan, and provenance metrics.
 - Labeled relevance evals that check fact preservation, junk avoidance, token budget, and provenance coverage.
 
 ## Research-Inspired Roadmap
 
 - Contextual chunking: prepend local page metadata and section titles to chunks before optional dense reranking.
-- Better provenance: add stable text-fragment anchors and rendered DOM snapshots for dynamic pages.
-- Late-interaction reranking: add an optional local reranker for better chunk selection.
-- Lost-in-context mitigation: return a short priority capsule before longer supporting chunks.
-- Corrective retrieval: flag low-confidence retrieval and suggest broader search/read calls.
-- Evidence verification: add `web_verify` to check whether a claim is supported by returned chunks.
+- Better provenance: add stable text-fragment anchors (`#:~:text=...`) and rendered DOM snapshots for dynamic pages.
+- Late-interaction reranking: add an optional local cross-encoder reranker for better chunk selection.
+- Persistent cache: extend the current in-memory cache with an optional on-disk layer.
+- Multi-sentence claim decomposition: split compound claims inside `web_verify` and verify each piece independently.
 
 ## Open-Source Boundary
 

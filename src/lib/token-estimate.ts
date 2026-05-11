@@ -1,9 +1,62 @@
+import type { Tiktoken } from "js-tiktoken/lite";
+
+let encoder: Tiktoken | null = null;
+let encoderInitPromise: Promise<void> | null = null;
+
+async function ensureEncoder(): Promise<Tiktoken | null> {
+  if (encoder) {
+    return encoder;
+  }
+
+  if (!encoderInitPromise) {
+    encoderInitPromise = (async () => {
+      try {
+        const { Tiktoken } = await import("js-tiktoken/lite");
+        const { default: cl100kBase } = await import(
+          "js-tiktoken/ranks/cl100k_base"
+        );
+        encoder = new Tiktoken(cl100kBase);
+      } catch (error) {
+        process.stderr.write(
+          `[internet-context-mcp] tokenizer load failed, falling back to chars/4: ${
+            error instanceof Error ? error.message : String(error)
+          }\n`,
+        );
+        encoder = null;
+      }
+    })();
+  }
+
+  await encoderInitPromise;
+  return encoder;
+}
+
+// Synchronous fast-path: most callsites need an immediate number.
+// We warm the encoder on first call asynchronously, and fall back to chars/4
+// until it's ready. Once loaded, subsequent calls are exact.
 export function estimateTokens(text: string): number {
   if (!text) {
     return 0;
   }
 
+  if (encoder) {
+    return encoder.encode(text).length;
+  }
+
+  void ensureEncoder();
   return Math.ceil(text.length / 4);
+}
+
+export async function estimateTokensExact(text: string): Promise<number> {
+  if (!text) {
+    return 0;
+  }
+
+  const enc = await ensureEncoder();
+  if (!enc) {
+    return Math.ceil(text.length / 4);
+  }
+  return enc.encode(text).length;
 }
 
 export function trimToTokenBudget(text: string, maxTokens: number): string {
@@ -46,4 +99,8 @@ export function estimateTokenSavings(rawText: string, returnedText: string) {
     saved_tokens: savedTokens,
     savings_ratio: savingsRatio,
   };
+}
+
+export async function warmTokenizer(): Promise<void> {
+  await ensureEncoder();
 }

@@ -2,9 +2,10 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { cleanPageContent } from "../lib/clean-html.js";
 import { fetchPage } from "../lib/fetch-page.js";
-import { jsonContent } from "../lib/mcp-response.js";
+import { structuredJsonContent } from "../lib/mcp-response.js";
 import { estimateTokenSavings } from "../lib/token-estimate.js";
 import { normalizeWhitespace, selectRelevantText } from "../lib/text-selection.js";
+import { READ_ONLY_ANNOTATIONS, webExtractOutputShape } from "./schemas.js";
 
 type JsonValue =
   | string
@@ -27,32 +28,43 @@ interface FieldSpec {
 }
 
 export function registerWebExtractTool(server: McpServer): void {
-  server.tool(
+  server.registerTool(
     "web_extract",
-    "Fetch a URL and return best-effort field extraction from clean page text. Prefer web_context when the calling agent can reason over evidence itself.",
     {
-      url: z.string().url().describe("The URL to fetch and extract from."),
-      schema: z
-        .record(z.unknown())
-        .describe("A JSON-like schema object. Leaf values can be string, number, boolean, arrays, or example objects."),
-      query: z
-        .string()
-        .optional()
-        .describe("Optional focus query to reduce the page before extraction."),
-      max_context_tokens: z
-        .number()
-        .int()
-        .min(500)
-        .max(30_000)
-        .default(8_000)
-        .describe("Approximate token budget for extraction context."),
-      timeout_ms: z
-        .number()
-        .int()
-        .min(1_000)
-        .max(60_000)
-        .default(15_000)
-        .describe("Fetch timeout in milliseconds."),
+      title: "Web extract (deterministic)",
+      description: [
+        "Fetch a URL and return a best-effort field extraction against a caller-supplied schema.",
+        "Use when: the calling agent cannot reason over evidence chunks itself and needs a flat record.",
+        "Prefer web_context when the host LLM can read evidence and produce the structured output.",
+      ].join(" "),
+      annotations: { ...READ_ONLY_ANNOTATIONS, title: "Web extract" },
+      inputSchema: {
+        url: z.string().url().describe("The URL to fetch and extract from."),
+        schema: z
+          .record(z.string(), z.unknown())
+          .describe(
+            "A JSON-like schema object. Leaf values can be string, number, boolean, arrays, or example objects.",
+          ),
+        query: z
+          .string()
+          .optional()
+          .describe("Optional focus query to reduce the page before extraction."),
+        max_context_tokens: z
+          .number()
+          .int()
+          .min(500)
+          .max(30_000)
+          .default(8_000)
+          .describe("Approximate token budget for extraction context."),
+        timeout_ms: z
+          .number()
+          .int()
+          .min(1_000)
+          .max(60_000)
+          .default(15_000)
+          .describe("Fetch timeout in milliseconds."),
+      },
+      outputSchema: webExtractOutputShape,
     },
     async ({ url, schema, query, max_context_tokens, timeout_ms }) => {
       const fetched = await fetchPage(url, {
@@ -67,7 +79,7 @@ export function registerWebExtractTool(server: McpServer): void {
       );
       const extraction = extractFromText(schema, context, fetched.final_url);
 
-      return jsonContent({
+      return structuredJsonContent({
         requested_url: fetched.requested_url,
         final_url: fetched.final_url,
         title: cleaned.title,
