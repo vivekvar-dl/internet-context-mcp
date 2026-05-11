@@ -87,12 +87,30 @@ Output shape (abbreviated):
 
 `contradictions` lists cases where chunks from different sources are on the same topic but neither entails the other in either direction. The detector runs in two stages: an **embedding-cosine prefilter** (≥0.45) that requires the two chunks be discussing the same claim, and then an **NLI bidirectional non-entailment** check (≤0.05 entailment both directions) on the survivors. Both must hold.
 
-Each contradiction includes `topical_similarity` (the actual cosine) and `confidence` (the NLI signal). Validated against:
-
-- Synthetic positive: "coffee lowers cardio risk" vs "coffee raises cardio risk" → flagged, conf=0.9999, topical_similarity=0.91 ✓
-- 5 live real-world queries (eggs/cholesterol, intermittent fasting, coffee/heart, speed of light, capital of France) → **0 false positives** across all five. Earlier shingle-only build produced 3 false positives on "capital of France"; v0.4.1 produces none.
+Each contradiction includes `topical_similarity` (the actual cosine) and `confidence` (the NLI signal).
 
 The prefilter intentionally allows same-cluster pairs through: in the wild, two sources making *opposing* claims about the same fact paraphrase each other with very high cosine (~0.9), so they cluster together. Excluding same-cluster pairs would mean missing the contradictions we most want to surface.
+
+#### Detector evaluation — measured, not aspirational
+
+This is what we have measured the detector to actually do. Eval scripts are in `scripts/demo-contradiction-*.ts` so the numbers are reproducible.
+
+| Eval set | Sources fetched | Contradictions detected | What it means |
+|---|---:|---:|---|
+| Synthetic positive ("coffee lowers cardio risk" vs "coffee raises cardio risk") | n/a | **1** (conf 0.9999, topical 0.91) | Detector fires on hand-crafted unambiguous disagreement |
+| 5 live queries (eggs, intermittent fasting, coffee/heart, speed of light, capital of France) | 18 | **0** | Zero false positives. v0.4.0 produced 3 false positives on this exact set; v0.4.1 cleared them all. |
+| 3 curated URL pairs picked precisely *because* the sources should disagree (aspirin primary prevention, vitamin D, saturated fat) | 5 of 8 — NEJM/BMJ returned 403 to static fetch | **0** | The sources that fetched gave nuanced caution; primary sources where the dispute is direct were paywalled. |
+| 3 depth=8 search sweeps on topics with known popular-vs-evidence splits (stretching, breakfast, running and knees) | 23 of 24 | **0** | Search engines return the current consensus; the dispute lives elsewhere. |
+
+**Across ~30 real sources fetched, the detector fired exactly zero times. It also produced zero false positives.**
+
+The truthful claim about v0.4.x: the detector has **near-zero false-positive rate on real-world web** and fires reliably on **lexically explicit opposing claims**. It does not, in our testing, detect disputes that are real but expressed with hedged or qualified prose — which is most of how the indexed web talks about disagreement. Three reasons:
+
+1. Search engines (DDG, Google) return homogenized mainstream content; the dispute lives in academic papers or contrarian sources that don't rank well.
+2. Mainstream web prose qualifies its disagreement ("some studies suggest", "for certain populations", "recent research has shown"). NLI's bidirectional non-entailment does not fire on hedged contrast.
+3. Many primary sources where the dispute *is* direct (NEJM, BMJ, ScienceDirect, Britannica) block static fetches with HTTP 403.
+
+If you want the detector to catch hedged disagreement, you'd need to loosen the entailment ceiling and accept some false positives. If you want broader source access, you'd need browser rendering and (for paywalled journals) credentials. v0.4.x does neither; it stays read-only, local, and honest about what it sees.
 
 **Honest caveat about the agreement signal**: when `agreement_count=N` across N sources, that means N sources from the search results corroborated each other — not that the claim is true. Search engines tend to return the current mainstream view, which can hide genuine disputes (the eggs/cholesterol query returned 4 modern sources all agreeing the modern consensus, even though the topic was contested for decades).
 
