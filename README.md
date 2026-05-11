@@ -85,7 +85,16 @@ Output shape (abbreviated):
 
 `agreement_count` and `agreement_score` use **semantic similarity** (all-MiniLM-L6-v2 cosine, ~22MB, lazy-loaded) by default in v0.4.0+. Paraphrased agreement now counts: three sources independently saying the same fact in different words will cluster together. The clustering falls back to 4-gram shingle Jaccard when the embedding model fails to load; the `clustering_method` field on every response shows which one ran.
 
-`contradictions` lists cases where the local NLI classifier returns bidirectional non-entailment between cluster representatives from different sources — i.e. source A's chunk does not entail source B's chunk, and B's does not entail A's. This is conservative: it only fires on real disagreement, not on a source being more specific than another. Validated on synthetic ("coffee lowers cardio risk" vs "coffee increases cardio risk" → flagged with 0.9999 confidence; the unrelated origin-of-coffee chunk → no false positive).
+`contradictions` lists cases where chunks from different sources are on the same topic but neither entails the other in either direction. The detector runs in two stages: an **embedding-cosine prefilter** (≥0.45) that requires the two chunks be discussing the same claim, and then an **NLI bidirectional non-entailment** check (≤0.05 entailment both directions) on the survivors. Both must hold.
+
+Each contradiction includes `topical_similarity` (the actual cosine) and `confidence` (the NLI signal). Validated against:
+
+- Synthetic positive: "coffee lowers cardio risk" vs "coffee raises cardio risk" → flagged, conf=0.9999, topical_similarity=0.91 ✓
+- 5 live real-world queries (eggs/cholesterol, intermittent fasting, coffee/heart, speed of light, capital of France) → **0 false positives** across all five. Earlier shingle-only build produced 3 false positives on "capital of France"; v0.4.1 produces none.
+
+The prefilter intentionally allows same-cluster pairs through: in the wild, two sources making *opposing* claims about the same fact paraphrase each other with very high cosine (~0.9), so they cluster together. Excluding same-cluster pairs would mean missing the contradictions we most want to surface.
+
+**Honest caveat about the agreement signal**: when `agreement_count=N` across N sources, that means N sources from the search results corroborated each other — not that the claim is true. Search engines tend to return the current mainstream view, which can hide genuine disputes (the eggs/cholesterol query returned 4 modern sources all agreeing the modern consensus, even though the topic was contested for decades).
 
 ### `web_context`
 

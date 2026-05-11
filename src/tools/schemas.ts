@@ -277,6 +277,7 @@ export const webResearchOutputShape = {
         text_preview: z.string(),
       }),
       confidence: z.number(),
+      topical_similarity: z.number(),
       reason: z.string(),
     }),
   ),
