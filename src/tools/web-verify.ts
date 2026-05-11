@@ -82,7 +82,7 @@ export function registerWebVerifyTool(server: McpServer): void {
               0,
               Math.max(6, Math.ceil(max_tokens_per_source / 200)),
             );
-            const result = verifyClaimAgainst(claim, truncated);
+            const result = await verifyClaimAgainst(claim, truncated);
 
             return {
               url,
@@ -107,6 +107,7 @@ export function registerWebVerifyTool(server: McpServer): void {
                 verdict: "unclear" as const,
                 confidence: 0,
                 reasons: ["fetch_failed"],
+                method: "regex_fallback" as const,
                 supporting_chunks: [],
                 refuting_chunks: [],
               },
@@ -143,6 +144,7 @@ export function registerWebVerifyTool(server: McpServer): void {
           verdict: entry.result.verdict,
           confidence: entry.result.confidence,
           reasons: entry.result.reasons,
+          method: "method" in entry.result ? entry.result.method : undefined,
           supporting_chunks: entry.result.supporting_chunks,
           refuting_chunks: entry.result.refuting_chunks,
         })),

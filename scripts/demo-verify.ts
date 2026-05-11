@@ -61,7 +61,7 @@ for (const testCase of cases) {
           metadataText: metadataText(structuredData),
           structuredDataText: structuredDataText(structuredData),
         });
-        const result = verifyClaimAgainst(testCase.claim, ranked.slice(0, 8));
+        const result = await verifyClaimAgainst(testCase.claim, ranked.slice(0, 8));
         return {
           url,
           ok: true,
@@ -80,6 +80,7 @@ for (const testCase of cases) {
             verdict: "unclear" as const,
             confidence: 0,
             reasons: ["fetch_failed"],
+            method: "regex_fallback" as const,
             supporting_chunks: [],
             refuting_chunks: [],
           },
@@ -99,7 +100,7 @@ for (const testCase of cases) {
         ("title" in entry ? ` title=${truncate(entry.title ?? "", 60)}` : ""),
     );
     console.log(
-      `      verdict=${entry.result.verdict} confidence=${entry.result.confidence} reasons=${JSON.stringify(entry.result.reasons)}`,
+      `      verdict=${entry.result.verdict} confidence=${entry.result.confidence} method=${entry.result.method ?? "regex_fallback"} reasons=${JSON.stringify(entry.result.reasons)}`,
     );
     if (entry.result.supporting_chunks.length > 0) {
       const top = entry.result.supporting_chunks[0];

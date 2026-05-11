@@ -100,6 +100,10 @@ export async function rerankChunks(
   return [...reranked, ...rest];
 }
 
-export function rerankerEnabled(): boolean {
-  return process.env.INTERNET_CONTEXT_MCP_RERANK === "1";
+export function rerankerEnabledByDefault(): boolean {
+  return process.env.INTERNET_CONTEXT_MCP_RERANK !== "0";
+}
+
+export async function warmReranker(model = DEFAULT_MODEL): Promise<void> {
+  await loadPipeline(model);
 }

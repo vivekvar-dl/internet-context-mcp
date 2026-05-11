@@ -1,6 +1,6 @@
 {
   "name": "internet-context-mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Clean, compact web context tools for AI agents over MCP.",
   "type": "module",
   "bin": {

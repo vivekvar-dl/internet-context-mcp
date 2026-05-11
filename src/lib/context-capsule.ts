@@ -4,7 +4,7 @@ import { fetchPage } from "./fetch-page.js";
 import { shortFingerprint } from "./fingerprint.js";
 import { buildPriorityCapsule } from "./priority-capsule.js";
 import { scanForPromptInjection } from "./prompt-injection-scan.js";
-import { rerankChunks, rerankerEnabled } from "./reranker.js";
+import { rerankChunks, rerankerEnabledByDefault } from "./reranker.js";
 import { assessRetrievalConfidence } from "./retrieval-confidence.js";
 import { mapChunkToSourceBlocks } from "./source-provenance.js";
 import { extractStructuredData } from "./structured-data.js";
@@ -43,7 +43,7 @@ export async function buildContextCapsule(options: BuildContextCapsuleOptions) {
     structuredDataText: structuredDataText(structuredData),
   });
 
-  const shouldRerank = options.rerank ?? rerankerEnabled();
+  const shouldRerank = options.rerank ?? rerankerEnabledByDefault();
   if (shouldRerank && rankedChunks.length > 1) {
     rankedChunks = await rerankChunks(options.task, rankedChunks);
   }

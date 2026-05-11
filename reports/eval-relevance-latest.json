@@ -9,7 +9,7 @@
     "excluded_pass_rate": 1,
     "provenance_pass_rate": 1,
     "token_budget_pass_rate": 1,
-    "average_token_savings_ratio": 0.9203,
+    "average_token_savings_ratio": 0.9192,
     "failures": []
   },
   "results": [
@@ -88,10 +88,10 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 428,
-      "token_savings_ratio": 0.9871,
-      "evidence_chunks": 7,
-      "source_blocks": 35
+      "selected_tokens": 450,
+      "token_savings_ratio": 0.9863,
+      "evidence_chunks": 8,
+      "source_blocks": 40
     },
     {
       "id": "node-fs",
@@ -233,7 +233,7 @@
       "missing_terms": [],
       "forbidden_terms_found": [],
       "selected_tokens": 1199,
-      "token_savings_ratio": 0.9905,
+      "token_savings_ratio": 0.9904,
       "evidence_chunks": 8,
       "source_blocks": 40
     },
@@ -264,10 +264,10 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 211,
-      "token_savings_ratio": 0.998,
-      "evidence_chunks": 3,
-      "source_blocks": 15
+      "selected_tokens": 228,
+      "token_savings_ratio": 0.9978,
+      "evidence_chunks": 4,
+      "source_blocks": 20
     },
     {
       "id": "openapi-spec",
@@ -328,10 +328,10 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 307,
-      "token_savings_ratio": 0.9788,
-      "evidence_chunks": 1,
-      "source_blocks": 5
+      "selected_tokens": 572,
+      "token_savings_ratio": 0.9584,
+      "evidence_chunks": 4,
+      "source_blocks": 16
     }
   ]
 }

@@ -28,7 +28,9 @@ The host agent should treat webpage text as untrusted data and reason only from 
 - Evidence verification: `web_verify` checks claim support across one or more URLs, with simple negation detection near matched terms.
 - Two-tier fetch cache: short-lived in-memory L1 + persistent SQLite L2 at `~/.cache/internet-context-mcp/`, survives across host restarts.
 - Real tokenizer (`js-tiktoken` / cl100k_base) so `selected_tokens` and `savings_ratio` reflect what the host LLM will actually see.
-- Optional local cross-encoder reranker (Xenova/ms-marco-MiniLM-L-6-v2 via `@huggingface/transformers`). Lazy-loaded on first opt-in call.
+- Local cross-encoder reranker (Xenova/ms-marco-MiniLM-L-6-v2 via `@huggingface/transformers`) is on by default as of v0.3.0; lazy-loaded at server start.
+- Local zero-shot NLI classifier (Xenova/nli-deberta-v3-xsmall) backs `web_verify` for real entailment/contradiction signals, with a regex fallback if the model fails to load.
+- `web_research` orchestrates search → parallel fetch → per-source ranking → cross-source clustering → unified evidence pack with per-chunk citations and a redundancy-based agreement signal.
 - Optional Playwright rendering for JS-heavy pages, declared as an `optionalDependency` so the default install stays small.
 - MCP-native hygiene: `readOnlyHint`/`openWorldHint` annotations, `outputSchema` for typed structuredContent, `internet-context://page/<fingerprint>` resource template, and `verify_with_sources` / `summarize_from_context` prompt templates.
 - Real-site stress testing across 100 public pages with live fetch, cleanup, ranking, structured data, safety scan, and provenance metrics.

@@ -23,9 +23,67 @@ Every tool ships with proper MCP metadata so hosts can use it cleanly:
 - Two-tier fetch cache: in-memory + a persistent SQLite layer at `~/.cache/internet-context-mcp/cache.sqlite`. Survives across host restarts.
 - Real tokenizer via `js-tiktoken` (cl100k_base). No more `chars / 4` approximations.
 - Optional Playwright rendering for JS-heavy pages, gated behind `render: "browser"` and shipped only as an `optionalDependency`.
-- Optional local cross-encoder reranker (`Xenova/ms-marco-MiniLM-L-6-v2`) via Transformers.js. Off by default; opt in with `rerank: true` or `INTERNET_CONTEXT_MCP_RERANK=1`.
+- Local cross-encoder reranker (`Xenova/ms-marco-MiniLM-L-6-v2`) via Transformers.js — **on by default** as of v0.3.0, lazy-loaded at server start. Pass `rerank: false` per call or set `INTERNET_CONTEXT_MCP_RERANK=0` to disable.
+- Local NLI classifier (`Xenova/nli-deberta-v3-xsmall`, zero-shot-classification) backs `web_verify` — on by default with a regex fallback if the model fails to load. Disable with `INTERNET_CONTEXT_MCP_NLI=0`.
 
 ## Tools
+
+### `web_research`
+
+One-shot research tool: search the web, fetch the top N results in parallel, rank chunks within each source (with the local reranker by default), then cross-rank globally and return a unified evidence pack with per-chunk source citations and a redundancy-based agreement signal.
+
+Use this when you'd otherwise be calling `web_search` and then `web_context` several times in a row.
+
+Input:
+
+```json
+{
+  "query": "What is the Model Context Protocol and who built it?",
+  "depth": 4,
+  "max_tokens_total": 3000
+}
+```
+
+Output shape (abbreviated):
+
+```json
+{
+  "query": "...",
+  "provider": "duckduckgo_html",
+  "depth": 4,
+  "unique_sources": 3,
+  "sources": [
+    {
+      "index": 0,
+      "requested_url": "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+      "ok": true,
+      "title": "Model Context Protocol - Wikipedia",
+      "retrieval_confidence": { "level": "high", "score": 0.79 },
+      "selected_chunks": 1
+    }
+  ],
+  "ranked_evidence": [
+    {
+      "source_index": 1,
+      "source_url": "https://www.anthropic.com/news/model-context-protocol",
+      "source_title": "Introducing the Model Context Protocol",
+      "chunk_id": 2,
+      "cluster_id": 2,
+      "agreement_count": 1,
+      "score": 1.0,
+      "combined_score": 1.0,
+      "section": null,
+      "matched_terms": ["model", "context", "protocol"],
+      "text": "Today, we're open-sourcing the Model Context Protocol..."
+    }
+  ],
+  "agreement_score": 0.0,
+  "verdict_reasons": ["sources_did_not_overlap"],
+  "token_budget": { "max_tokens_total": 3000, "used_tokens": 1949 }
+}
+```
+
+`agreement_count` and `agreement_score` use **shingle-based** clustering, so they reflect verbatim copy-paste agreement (one source quoting another) — not paraphrased agreement. If three sources independently say the same thing in different words, they will still land in different clusters. This is honest by design; a semantic-similarity clusterer is a planned upgrade.
 
 ### `web_context`
 
@@ -258,7 +316,7 @@ The repo includes a labeled relevance set in `evals/relevance.json`. It checks w
 npm run eval:relevance
 ```
 
-The latest 20-case run on v0.2.0 passed all cases (numbers are with `js-tiktoken` cl100k_base, not the old chars/4 heuristic):
+The latest 20-case run on v0.3.0 (reranker on by default, real tokenizer) passed all cases:
 
 ```json
 {
@@ -267,7 +325,7 @@ The latest 20-case run on v0.2.0 passed all cases (numbers are with `js-tiktoken
   "excluded_pass_rate": 1,
   "provenance_pass_rate": 1,
   "token_budget_pass_rate": 1,
-  "average_token_savings_ratio": 0.9203
+  "average_token_savings_ratio": 0.9192
 }
 ```
 
@@ -340,8 +398,9 @@ Then call any tool with `render: "browser"`.
 
 ## Next Milestones
 
-1. Multi-sentence claim decomposition in `web_verify` so compound claims return per-clause verdicts.
-2. Stable text-fragment anchors (`#:~:text=...`) in chunk provenance for deep-linking back to the page.
-3. PDF support for the fetch + clean pipeline.
-4. `robots.txt` + crawl-delay awareness for responsible read-only fetching.
-5. Adversarial prompt-injection eval set replacing the small hand-written regex set.
+1. Replace the shingle-based cross-source clustering in `web_research` with semantic similarity so paraphrased agreement counts.
+2. Multi-sentence claim decomposition in `web_verify` so compound claims return per-clause verdicts.
+3. Stable text-fragment anchors (`#:~:text=...`) in chunk provenance for deep-linking back to the page.
+4. PDF support for the fetch + clean pipeline.
+5. `robots.txt` + crawl-delay awareness for responsible read-only fetching.
+6. Adversarial prompt-injection eval set replacing the small hand-written regex set.

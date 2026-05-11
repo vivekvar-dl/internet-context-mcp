@@ -58,7 +58,7 @@ export function registerWebContextTool(server: McpServer): void {
           .boolean()
           .optional()
           .describe(
-            "Opt in to local cross-encoder reranking (Xenova/ms-marco-MiniLM-L-6-v2). Off by default; first call downloads ~25MB. Can also be enabled globally via INTERNET_CONTEXT_MCP_RERANK=1.",
+            "Apply the local cross-encoder reranker (Xenova/ms-marco-MiniLM-L-6-v2). On by default. Pass false for pure BM25-only ranking. Disable globally with INTERNET_CONTEXT_MCP_RERANK=0.",
           ),
       },
       outputSchema: webContextOutputShape,

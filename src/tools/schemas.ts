@@ -176,6 +176,10 @@ const chunkClaimMatchSchema = z.object({
   matched_terms: z.array(z.string()),
   contains_negation: z.boolean(),
   text_preview: z.string(),
+  nli_label: z
+    .enum(["entailment", "neutral", "contradiction"])
+    .optional(),
+  nli_score: z.number().optional(),
 });
 
 export const webVerifyOutputShape = {
@@ -198,10 +202,67 @@ export const webVerifyOutputShape = {
       verdict: z.enum(["supported", "refuted", "unclear"]),
       confidence: z.number(),
       reasons: z.array(z.string()),
+      method: z.enum(["nli", "regex_fallback"]).optional(),
       supporting_chunks: z.array(chunkClaimMatchSchema),
       refuting_chunks: z.array(chunkClaimMatchSchema),
     }),
   ),
+};
+
+export const webResearchOutputShape = {
+  query: z.string(),
+  provider: z.string(),
+  depth: z.number(),
+  retrieved_at: z.string(),
+  elapsed_ms: z.number(),
+  unique_sources: z.number(),
+  sources: z.array(
+    z.object({
+      index: z.number(),
+      requested_url: z.string(),
+      final_url: z.string().optional(),
+      title: z.string().nullable(),
+      source_quality: z.string(),
+      content_fingerprint: z.string().optional(),
+      from_cache: z.boolean().optional(),
+      status: z.number().optional(),
+      ok: z.boolean(),
+      error: z.string().optional(),
+      retrieval_confidence: z
+        .object({
+          level: z.enum(["high", "medium", "low"]),
+          score: z.number(),
+          reasons: z.array(z.string()),
+          suggestion: z.string().nullable(),
+        })
+        .optional(),
+      selected_chunks: z.number().optional(),
+    }),
+  ),
+  ranked_evidence: z.array(
+    z.object({
+      source_index: z.number(),
+      source_url: z.string(),
+      source_title: z.string().nullable(),
+      chunk_id: z.number(),
+      cluster_id: z.number(),
+      agreement_count: z.number(),
+      score: z.number(),
+      combined_score: z.number(),
+      section: z.string().nullable(),
+      section_path: z.array(z.string()),
+      matched_terms: z.array(z.string()),
+      token_estimate: z.number(),
+      text: z.string(),
+    }),
+  ),
+  agreement_score: z.number(),
+  verdict_reasons: z.array(z.string()),
+  instructions: z.array(z.string()),
+  token_budget: z.object({
+    max_tokens_total: z.number(),
+    used_tokens: z.number(),
+  }),
 };
 
 export const READ_ONLY_ANNOTATIONS = {
