@@ -89,6 +89,37 @@ export function cleanPageContent(html: string, url: string): CleanPage {
     text = blockText;
   }
 
+  // Last-resort fallback for sites Readability can't parse and that have no
+  // standard <h*>/<p>/<li> structure (bespoke React docs like
+  // docs.anthropic.com, vercel.com/docs, stripe.com/docs). Grab all visible
+  // body text after noisy elements have been removed.
+  const MIN_USEFUL_TEXT = 200;
+  let extractionFallback: "readability" | "blocks" | "body_text_content" =
+    text === blockText ? "blocks" : "readability";
+  if (text.length < MIN_USEFUL_TEXT && blockText.length < MIN_USEFUL_TEXT) {
+    const aggressive = aggressiveBodyText(dom.window.document);
+    if (aggressive.length > Math.max(text.length, blockText.length)) {
+      text = aggressive;
+      extractionFallback = "body_text_content";
+    }
+  }
+
+  const finalBlocks =
+    extractionFallback === "body_text_content" && blocks.length === 0
+      ? [
+          {
+            id: 1,
+            tag: "text",
+            text,
+            dom_path: "body",
+            line_start: null,
+            line_end: null,
+            section: null,
+            section_path: [],
+          },
+        ]
+      : blocks;
+
   return {
     title: article?.title?.trim() || extractTitle(html),
     byline: article?.byline?.trim() || null,
@@ -96,9 +127,13 @@ export function cleanPageContent(html: string, url: string): CleanPage {
     site_name: article?.siteName?.trim() || null,
     text,
     headings: extractHeadings($),
-    blocks,
+    blocks: finalBlocks,
     links: extractLinks($, url),
   };
+}
+
+function aggressiveBodyText(document: Document): string {
+  return normalizeWhitespace(document.body?.textContent ?? "");
 }
 
 function textFromBlocks(blocks: CleanBlock[]): string {

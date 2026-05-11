@@ -258,7 +258,7 @@ The repo includes a labeled relevance set in `evals/relevance.json`. It checks w
 npm run eval:relevance
 ```
 
-The latest 20-case run passed all cases:
+The latest 20-case run on v0.2.0 passed all cases (numbers are with `js-tiktoken` cl100k_base, not the old chars/4 heuristic):
 
 ```json
 {
@@ -267,7 +267,7 @@ The latest 20-case run passed all cases:
   "excluded_pass_rate": 1,
   "provenance_pass_rate": 1,
   "token_budget_pass_rate": 1,
-  "average_token_savings_ratio": 0.9158
+  "average_token_savings_ratio": 0.9203
 }
 ```
 

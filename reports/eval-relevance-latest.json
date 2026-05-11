@@ -9,7 +9,7 @@
     "excluded_pass_rate": 1,
     "provenance_pass_rate": 1,
     "token_budget_pass_rate": 1,
-    "average_token_savings_ratio": 0.9158,
+    "average_token_savings_ratio": 0.9203,
     "failures": []
   },
   "results": [
@@ -40,8 +40,8 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 172,
-      "token_savings_ratio": 0.8508,
+      "selected_tokens": 121,
+      "token_savings_ratio": 0.8877,
       "evidence_chunks": 1,
       "source_blocks": 4
     },
@@ -56,8 +56,8 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 1185,
-      "token_savings_ratio": 0.9959,
+      "selected_tokens": 1191,
+      "token_savings_ratio": 0.9967,
       "evidence_chunks": 5,
       "source_blocks": 25
     },
@@ -72,10 +72,10 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 1175,
-      "token_savings_ratio": 0.9953,
-      "evidence_chunks": 4,
-      "source_blocks": 20
+      "selected_tokens": 1200,
+      "token_savings_ratio": 0.9961,
+      "evidence_chunks": 7,
+      "source_blocks": 35
     },
     {
       "id": "mdn-fetch-api",
@@ -88,8 +88,8 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 522,
-      "token_savings_ratio": 0.9846,
+      "selected_tokens": 428,
+      "token_savings_ratio": 0.9871,
       "evidence_chunks": 7,
       "source_blocks": 35
     },
@@ -104,10 +104,10 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 1061,
-      "token_savings_ratio": 0.9957,
-      "evidence_chunks": 7,
-      "source_blocks": 35
+      "selected_tokens": 1187,
+      "token_savings_ratio": 0.9963,
+      "evidence_chunks": 5,
+      "source_blocks": 25
     },
     {
       "id": "react-use-state",
@@ -120,10 +120,10 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 1165,
-      "token_savings_ratio": 0.9892,
-      "evidence_chunks": 5,
-      "source_blocks": 25
+      "selected_tokens": 1166,
+      "token_savings_ratio": 0.9919,
+      "evidence_chunks": 6,
+      "source_blocks": 30
     },
     {
       "id": "typescript-unions",
@@ -136,8 +136,8 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 957,
-      "token_savings_ratio": 0.9842,
+      "selected_tokens": 1101,
+      "token_savings_ratio": 0.9875,
       "evidence_chunks": 4,
       "source_blocks": 20
     },
@@ -152,8 +152,8 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 1122,
-      "token_savings_ratio": 0.9555,
+      "selected_tokens": 1127,
+      "token_savings_ratio": 0.9593,
       "evidence_chunks": 4,
       "source_blocks": 20
     },
@@ -168,10 +168,10 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 1194,
-      "token_savings_ratio": 0.9659,
-      "evidence_chunks": 16,
-      "source_blocks": 80
+      "selected_tokens": 1197,
+      "token_savings_ratio": 0.9684,
+      "evidence_chunks": 18,
+      "source_blocks": 90
     },
     {
       "id": "rust-cargo",
@@ -184,8 +184,8 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 186,
-      "token_savings_ratio": 0.9632,
+      "selected_tokens": 146,
+      "token_savings_ratio": 0.9778,
       "evidence_chunks": 5,
       "source_blocks": 25
     },
@@ -200,8 +200,8 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 131,
-      "token_savings_ratio": 0.9662,
+      "selected_tokens": 109,
+      "token_savings_ratio": 0.9723,
       "evidence_chunks": 1,
       "source_blocks": 2
     },
@@ -216,7 +216,7 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 197,
+      "selected_tokens": 153,
       "token_savings_ratio": 0,
       "evidence_chunks": 1,
       "source_blocks": 1
@@ -232,10 +232,10 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 1185,
-      "token_savings_ratio": 0.9908,
-      "evidence_chunks": 7,
-      "source_blocks": 35
+      "selected_tokens": 1199,
+      "token_savings_ratio": 0.9905,
+      "evidence_chunks": 8,
+      "source_blocks": 40
     },
     {
       "id": "github-actions",
@@ -248,8 +248,8 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 66,
-      "token_savings_ratio": 0.9993,
+      "selected_tokens": 50,
+      "token_savings_ratio": 0.9995,
       "evidence_chunks": 1,
       "source_blocks": 5
     },
@@ -264,8 +264,8 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 282,
-      "token_savings_ratio": 0.9967,
+      "selected_tokens": 211,
+      "token_savings_ratio": 0.998,
       "evidence_chunks": 3,
       "source_blocks": 15
     },
@@ -280,10 +280,10 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 1169,
-      "token_savings_ratio": 0.9929,
-      "evidence_chunks": 4,
-      "source_blocks": 20
+      "selected_tokens": 1192,
+      "token_savings_ratio": 0.9935,
+      "evidence_chunks": 5,
+      "source_blocks": 25
     },
     {
       "id": "oauth-rfc",
@@ -296,10 +296,10 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 1182,
-      "token_savings_ratio": 0.9769,
-      "evidence_chunks": 4,
-      "source_blocks": 20
+      "selected_tokens": 1154,
+      "token_savings_ratio": 0.9756,
+      "evidence_chunks": 7,
+      "source_blocks": 35
     },
     {
       "id": "wikipedia-web-crawler",
@@ -312,8 +312,8 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 1199,
-      "token_savings_ratio": 0.9805,
+      "selected_tokens": 1179,
+      "token_savings_ratio": 0.9836,
       "evidence_chunks": 7,
       "source_blocks": 35
     },
@@ -328,8 +328,8 @@
       "all_pass": true,
       "missing_terms": [],
       "forbidden_terms_found": [],
-      "selected_tokens": 411,
-      "token_savings_ratio": 0.9671,
+      "selected_tokens": 307,
+      "token_savings_ratio": 0.9788,
       "evidence_chunks": 1,
       "source_blocks": 5
     }
