@@ -32,6 +32,7 @@ First call lazy-downloads three local models from HuggingFace (~125 MB total, ca
 ```jsonc
 {
   "env": {
+    "TAVILY_API_KEY": "",                          // optional: preferred search provider (Tavily → Brave → DDG)
     "BRAVE_SEARCH_API_KEY": "",                  // optional: use Brave instead of the DDG fallback
     "INTERNET_CONTEXT_MCP_RERANK": "0",          // optional: disable the cross-encoder reranker
     "INTERNET_CONTEXT_MCP_NLI": "0",             // optional: disable NLI for web_verify
@@ -57,7 +58,7 @@ node dist/index.js   # exits when stdin closes — used by the MCP host
 - `web_verify` — claim-vs-sources verification, NLI-classifier-backed (entailment / neutral / contradiction), regex fallback.
 - `web_context` — fetch + rank + return ranked evidence chunks with priority capsule (TL;DR), retrieval-confidence signal, structured-data extraction, prompt-injection scan, source provenance with DOM paths.
 - `web_read` — clean compact page text with token-savings metadata.
-- `web_search` — Brave when `BRAVE_SEARCH_API_KEY` is set; DuckDuckGo HTML fallback otherwise.
+- `web_search` — Tavily when `TAVILY_API_KEY` is set; Brave when `BRAVE_SEARCH_API_KEY` is set; DuckDuckGo HTML fallback otherwise.
 - `web_extract` — best-effort schema-driven extraction.
 
 Plus:
@@ -288,7 +289,7 @@ Input:
 
 Searches the web and returns compact, source-classified results.
 
-If `BRAVE_SEARCH_API_KEY` is set, it uses Brave Search. Otherwise it falls back to DuckDuckGo HTML search.
+Uses the first available provider in priority order: Tavily (`TAVILY_API_KEY`), Brave Search (`BRAVE_SEARCH_API_KEY`), DuckDuckGo HTML fallback.
 
 Input:
 
@@ -475,6 +476,7 @@ For clients that accept JSON MCP server config:
       "command": "node",
       "args": ["C:/Users/domai/internet-context-mcp/dist/index.js"],
       "env": {
+        "TAVILY_API_KEY": "",
         "BRAVE_SEARCH_API_KEY": ""
       }
     }
@@ -499,7 +501,8 @@ This is an early open-source prototype. The strongest part is `web_context`: loc
 
 Environment variables:
 
-- `BRAVE_SEARCH_API_KEY` — if set, `web_search` uses Brave Search instead of the DuckDuckGo HTML fallback.
+- `TAVILY_API_KEY` — if set, `web_search` and `web_research` use Tavily as the primary search provider (highest priority).
+- `BRAVE_SEARCH_API_KEY` — if set (and `TAVILY_API_KEY` is not), uses Brave Search instead of the DuckDuckGo HTML fallback.
 - `INTERNET_CONTEXT_MCP_RERANK=1` — enable the local cross-encoder reranker globally. Off by default.
 - `INTERNET_CONTEXT_MCP_CACHE_DIR` — override the SQLite cache location. Defaults to `~/.cache/internet-context-mcp`.
 
