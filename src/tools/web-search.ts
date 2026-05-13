@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { tavily } from "@tavily/core";
 import * as cheerio from "cheerio";
 import { z } from "zod";
 import { fetchPage } from "../lib/fetch-page.js";
@@ -21,7 +22,7 @@ export function registerWebSearchTool(server: McpServer): void {
       description: [
         "Search the web and return compact, source-classified results.",
         "Use when: you do not yet have a URL and need to discover sources for a topic.",
-        "Uses BRAVE_SEARCH_API_KEY when set, otherwise DuckDuckGo HTML fallback.",
+        "Uses TAVILY_API_KEY when set (preferred), then BRAVE_SEARCH_API_KEY, otherwise DuckDuckGo HTML fallback.",
       ].join(" "),
       annotations: { ...READ_ONLY_ANNOTATIONS, title: "Web search" },
       inputSchema: {
@@ -44,13 +45,17 @@ export function registerWebSearchTool(server: McpServer): void {
       outputSchema: webSearchOutputShape,
     },
     async ({ query, limit, timeout_ms }) => {
-      const provider = process.env.BRAVE_SEARCH_API_KEY
-        ? "brave"
-        : "duckduckgo_html";
+      const provider = process.env.TAVILY_API_KEY
+        ? "tavily"
+        : process.env.BRAVE_SEARCH_API_KEY
+          ? "brave"
+          : "duckduckgo_html";
       const results =
-        provider === "brave"
-          ? await braveSearch(query, limit, timeout_ms)
-          : await duckDuckGoSearch(query, limit, timeout_ms);
+        provider === "tavily"
+          ? await tavilySearch(query, limit, timeout_ms)
+          : provider === "brave"
+            ? await braveSearch(query, limit, timeout_ms)
+            : await duckDuckGoSearch(query, limit, timeout_ms);
 
       return structuredJsonContent({
         query,
@@ -59,6 +64,30 @@ export function registerWebSearchTool(server: McpServer): void {
       });
     },
   );
+}
+
+async function tavilySearch(
+  query: string,
+  limit: number,
+  _timeoutMs: number,
+): Promise<SearchResult[]> {
+  const apiKey = process.env.TAVILY_API_KEY;
+  if (!apiKey) {
+    return [];
+  }
+
+  const client = tavily({ apiKey });
+  const response = await client.search(query, {
+    maxResults: limit,
+    searchDepth: "basic",
+  });
+
+  return (response.results ?? []).slice(0, limit).map((r) => ({
+    title: r.title ?? "",
+    url: r.url ?? "",
+    snippet: r.content ?? "",
+    source_quality: classifySource(r.url ?? "", r.title ?? ""),
+  }));
 }
 
 async function braveSearch(

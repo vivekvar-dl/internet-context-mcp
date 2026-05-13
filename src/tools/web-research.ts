@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { tavily } from "@tavily/core";
 import * as cheerio from "cheerio";
 import { z } from "zod";
 import { buildContextCapsule } from "../lib/context-capsule.js";
@@ -71,15 +72,19 @@ export function registerWebResearchTool(server: McpServer): void {
       outputSchema: webResearchOutputShape,
     },
     async ({ query, depth, max_tokens_total, timeout_ms_per_source, rerank }) => {
-      const provider = process.env.BRAVE_SEARCH_API_KEY
-        ? "brave"
-        : "duckduckgo_html";
+      const provider = process.env.TAVILY_API_KEY
+        ? "tavily"
+        : process.env.BRAVE_SEARCH_API_KEY
+          ? "brave"
+          : "duckduckgo_html";
 
       const startedAt = Date.now();
       const hits =
-        provider === "brave"
-          ? await braveSearch(query, depth, timeout_ms_per_source)
-          : await duckDuckGoSearch(query, depth, timeout_ms_per_source);
+        provider === "tavily"
+          ? await tavilySearch(query, depth, timeout_ms_per_source)
+          : provider === "brave"
+            ? await braveSearch(query, depth, timeout_ms_per_source)
+            : await duckDuckGoSearch(query, depth, timeout_ms_per_source);
 
       const perSource = await Promise.all(
         hits.slice(0, depth).map(async (hit, index) => {
@@ -257,6 +262,30 @@ export function registerWebResearchTool(server: McpServer): void {
       });
     },
   );
+}
+
+async function tavilySearch(
+  query: string,
+  limit: number,
+  _timeoutMs: number,
+): Promise<SearchHit[]> {
+  const apiKey = process.env.TAVILY_API_KEY;
+  if (!apiKey) {
+    return [];
+  }
+
+  const client = tavily({ apiKey });
+  const response = await client.search(query, {
+    maxResults: limit,
+    searchDepth: "basic",
+  });
+
+  return (response.results ?? []).slice(0, limit).map((r) => ({
+    title: r.title ?? "",
+    url: r.url ?? "",
+    snippet: r.content ?? "",
+    source_quality: classifySource(r.url ?? "", r.title ?? ""),
+  }));
 }
 
 async function braveSearch(

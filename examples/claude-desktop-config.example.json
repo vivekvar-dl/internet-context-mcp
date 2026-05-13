@@ -4,6 +4,7 @@
       "command": "node",
       "args": ["/absolute/path/to/internet-context-mcp/dist/index.js"],
       "env": {
+        "TAVILY_API_KEY": "",
         "BRAVE_SEARCH_API_KEY": ""
       }
     }

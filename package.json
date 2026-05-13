@@ -57,6 +57,7 @@
     "html-to-text": "^9.0.5",
     "js-tiktoken": "^1.0.21",
     "jsdom": "^27.2.0",
+    "@tavily/core": "^0.6.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {
